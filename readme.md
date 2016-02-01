@@ -1,5 +1,7 @@
 # OrleansHttp
 
+[![Build status](https://ci.appveyor.com/api/projects/status/06ps8j8tsh9s7qfx?svg=true)](https://ci.appveyor.com/project/richorama/orleanshttp)
+
 > This project is alpha quality, and is published to collect community feedback.
 
 An HTTP API into Microsoft Orleans.
@@ -25,19 +27,23 @@ Nuget is currently not available (coming soon).
     ...
 ```
 
-* Open this url in your browser: [`http://localhost:8080`](http://localhost:8080)
+## Usage
+
+Open this url in your browser: [`http://localhost:8080`](http://localhost:8080)
 
 You can then call grains using this scheme:
 
 ```
-http://localhost:8080/grain/IGrainInterface/PrimaryKey/MethodName/?argument=value
+http://localhost:8080/grain/IGrainInterface/PrimaryKey/MethodName/?parameter=value
 ```
 
 you can optionally supply a class prefix:
 
 ```
-http://localhost:8080/grain/IGrainInterface/PrimaryKey/MethodName/ClassPrefix/?argument=value
+http://localhost:8080/grain/IGrainInterface/PrimaryKey/MethodName/ClassPrefix/?parameter=value
 ```
+
+paramters are serialized as JSON.
 
 grains with compound keys should supply the keys with comma separation:
 
