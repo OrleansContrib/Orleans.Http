@@ -43,9 +43,9 @@ you can optionally supply a class prefix:
 http://localhost:8080/grain/IGrainInterface/PrimaryKey/MethodName/ClassPrefix/?parameter=value
 ```
 
-paramters are serialized as JSON.
+parameters are serialized as JSON.
 
-grains with compound keys should supply the keys with comma separation:
+compound keys should supply be supplied with comma separation (I hope you don't use commas in your key name!):
 
 ```
 http://localhost:8080/grain/IGrainInterface/1234,abc/MethodName/ClassPrefix/?argument=value
