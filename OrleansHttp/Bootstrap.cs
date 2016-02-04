@@ -24,7 +24,7 @@ namespace OrleansHttp
 
         public Task Init(string name, IProviderRuntime providerRuntime, IProviderConfiguration config)
         {
-            this.logger = providerRuntime.GetLogger("OrleansHttp");
+            this.logger = providerRuntime.GetLogger(name);
             this.Name = name;
 
             var router = new Router();
@@ -39,7 +39,7 @@ namespace OrleansHttp
             var username = config.Properties.ContainsKey("Username") ? config.Properties["Username"] : null;
             var password = config.Properties.ContainsKey("Password") ? config.Properties["Password"] : null;
 
-            host = WebApp.Start(options, app => new WebServer(router, username, password).Configuration(app));
+            host = WebApp.Start(options, app => new WebServer(router, username, password).Configure(app));
 
             this.logger.Verbose($"HTTP API listening on {options.Port}");
 

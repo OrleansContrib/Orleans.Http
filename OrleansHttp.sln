@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestHost", "TestHost\TestHo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrleansHttp", "OrleansHttp\OrleansHttp.csproj", "{6C5584E7-78A0-417D-B5C0-BF49BCF5B3A7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGrains", "TestGrains\TestGrains.csproj", "{3811EEDB-9F87-40CC-A0A1-B6D7C4D99134}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{6C5584E7-78A0-417D-B5C0-BF49BCF5B3A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C5584E7-78A0-417D-B5C0-BF49BCF5B3A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C5584E7-78A0-417D-B5C0-BF49BCF5B3A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3811EEDB-9F87-40CC-A0A1-B6D7C4D99134}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3811EEDB-9F87-40CC-A0A1-B6D7C4D99134}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3811EEDB-9F87-40CC-A0A1-B6D7C4D99134}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3811EEDB-9F87-40CC-A0A1-B6D7C4D99134}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,7 +6,7 @@
 
 An HTTP API into Microsoft Orleans.
 
-This is an HTTP listener hosted as a bootstrap provider in an orleans silo. It uses reflection to 
+This is an HTTP listener hosted as a bootstrap provider in an orleans silo. It uses reflection to
 send messages to grains, and returns the results as JSON.
 
 ## Installation
@@ -60,6 +60,23 @@ http://localhost:8080/grain/IManagementGrain/0/GetHosts?onlyActive=true
 ```
 
 Note, you can use `GET`, `POST` or `PUT` to send messages to your grains.
+
+## Benchmarking
+
+The project is currently configured for benchmarking, in an attempt to ensure performance
+is acceptable for real usage. Micro-benchmarking are not a perfect way to understand the full
+runtime characteristics of a system, but they are useful to isolate the performance cost of a feature.
+
+If you hit `[F5]` on the `TestHost` project, the application will run through some micro-benchmarks.
+
+It does a warmup round initially before sending 10,000 messages sequentially using different approaches.
+
+These are (in order):
+
+* Calling a grain directly using the conventional approach
+* Calling a grain using reflection over HTTP
+* Calling a grain over HTTP, but without reflection (as a reference)
+* Calling the HTTP controller, without entering Orleans (as a reference)
 
 ## Configuration
 

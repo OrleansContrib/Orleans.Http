@@ -27,6 +27,7 @@ namespace OrleansHttp
                 try
                 {
                     await result(context);
+                    return;
                 }
                 catch (Exception ex)
                 {
@@ -55,7 +56,7 @@ namespace OrleansHttp
             return func();
         }
 
-        public void Configuration(IAppBuilder app)
+        public void Configure(IAppBuilder app)
         {
             if (!string.IsNullOrWhiteSpace(this.Username) && !string.IsNullOrWhiteSpace(this.Password))
             {
