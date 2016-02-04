@@ -64,7 +64,7 @@ Note, you can use `GET`, `POST` or `PUT` to send messages to your grains.
 ## Benchmarking
 
 The project is currently configured for benchmarking, in an attempt to ensure performance
-is acceptable for real usage. Micro-benchmarking are not a perfect way to understand the full
+is acceptable for real usage. Micro-benchmarks are not a perfect way to understand the full
 runtime characteristics of a system, but they are useful to isolate the performance cost of a feature.
 
 If you hit `[F5]` on the `TestHost` project, the application will run through some micro-benchmarks.
@@ -77,6 +77,18 @@ These are (in order):
 * Calling a grain using reflection over HTTP
 * Calling a grain over HTTP, but without reflection (as a reference)
 * Calling the HTTP controller, without entering Orleans (as a reference)
+
+My results look like this (running in `Release` mode):
+
+```
+Time for direct connection tests: 5052ms
+Time for HTTP connection tests: 5988ms for http://localhost:8080/grain/ITestGrain/0/Test/
+Time for HTTP connection tests: 7685ms for http://localhost:8080/pinggrain
+Time for HTTP connection tests: 1247ms for http://localhost:8080/ping
+Reflection overhead = -1697 = -28%
+```
+
+I can't explain why the tests appear to show that reflection over HTTP is faster than without reflection over HTTP.
 
 ## Configuration
 
