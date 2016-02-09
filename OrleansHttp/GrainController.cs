@@ -98,9 +98,9 @@ namespace OrleansHttp
             }
         }
 
-        Task<object> Dispatch(Func<Task<object>> func)
+        async Task<object> Dispatch(Func<Task<object>> func)
         {
-            return Task.Factory.StartNew(func, CancellationToken.None, TaskCreationOptions.None, scheduler: this.TaskScheduler).Result;
+            return await Task.Factory.StartNew(func, CancellationToken.None, TaskCreationOptions.None, scheduler: this.TaskScheduler);
         }
 
         // horrible way of getting the correct method to get a grain reference
