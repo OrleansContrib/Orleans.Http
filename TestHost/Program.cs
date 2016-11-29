@@ -1,4 +1,5 @@
 ﻿using Orleans;
+using Orleans.Runtime.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -28,7 +29,7 @@ namespace TestHost
 
         static void InitSilo(string[] args)
         {
-            hostWrapper = new OrleansHostWrapper(args);
+            hostWrapper = new OrleansHostWrapper();
 
             if (!hostWrapper.Run())
             {
@@ -82,7 +83,7 @@ namespace TestHost
 
         static long RunDirectTests()
         {
-            GrainClient.Initialize();
+            GrainClient.Initialize(ClientConfiguration.LocalhostSilo());
 
             var timer = Stopwatch.StartNew();
             for (var i = 0; i < testSize; i++)
