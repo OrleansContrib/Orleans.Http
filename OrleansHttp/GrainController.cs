@@ -64,7 +64,7 @@ namespace OrleansHttp
 
             var grain = GetGrain(grainType, grainFactory, grainId, classPrefix);
 
-            var grainMethod = this.grainMethodCache.GetOrAdd($"{grainTypeName}.{grainMethodName}", x => grainType.GetMethod(grainMethodName));
+            var grainMethod = this.grainMethodCache.GetOrAdd($"{grainTypeName}.{grainMethodName}", x => grainType.GetImpMethod(grainMethodName));
             if (null == grainMethod) throw new MissingMethodException(grainTypeName, grainMethodName);
 
             var grainMethodParams = GetGrainParameters(grainMethod, context).ToArray();
@@ -161,7 +161,7 @@ namespace OrleansHttp
 
             if (typeof(IGrainWithGuidKey).IsAssignableFrom(grainType))
             {
-                var method = methods.First(x => x.GetParameters().Length == 2 && x.GetParameters().First().ParameterType.Name == "System.Guid");
+                var method = methods.First(x => x.GetParameters().Length == 2 && x.GetParameters().First().ParameterType.FullName == "System.Guid");
                 return method.MakeGenericMethod(grainType);
             }
             if (typeof(IGrainWithIntegerKey).IsAssignableFrom(grainType))
@@ -178,7 +178,7 @@ namespace OrleansHttp
 
             if (typeof(IGrainWithGuidCompoundKey).IsAssignableFrom(grainType))
             {
-                var method = methods.First(x => x.GetParameters().Length == 3 && x.GetParameters().First().ParameterType.Name == "System.Guid");
+                var method = methods.First(x => x.GetParameters().Length == 3 && x.GetParameters().First().ParameterType.FullName == "System.Guid");
                 return method.MakeGenericMethod(grainType);
             }
             if (typeof(IGrainWithIntegerCompoundKey).IsAssignableFrom(grainType))
