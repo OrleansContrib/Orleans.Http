@@ -11,11 +11,19 @@ send messages to grains, and returns the results as JSON.
 
 ## Installation
 
-Nuget is currently not available (coming soon).
+Using Nuget command line:
 
-* Build this project.
-* Copy the assemblies to the location of your Orleans host.
-* Add this bootstrap provider to your Orleans configuration:
+```
+PM> Install-Package OrleansHttp
+```
+
+Then register the bootstrap provider:
+
+```c#
+siloHost.Config.Globals.RegisterBootstrapProvider<Bootstrap>("http");
+```
+
+Alternatively you can do this with Orleans configuration:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
