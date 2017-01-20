@@ -1,6 +1,10 @@
 ﻿using Microsoft.Owin;
+using Microsoft.Owin.FileSystems;
+using Microsoft.Owin.StaticFiles;
 using Owin;
 using System;
+using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -63,6 +67,21 @@ namespace OrleansHttp
                 // if a username and password are supplied, enable basic auth
                 app.Use(BasicAuth);
             }
+            
+
+            string dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            
+            app.UseFileServer(new FileServerOptions()
+            {
+                RequestPath = PathString.Empty,
+                FileSystem = new PhysicalFileSystem(Path.Combine(dir, @"Static")),
+            });
+
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                RequestPath = new PathString("/Static"),
+                FileSystem = new PhysicalFileSystem(Path.Combine(dir, @"Static"))
+            });
             app.Use(HandleRequest);
         }
     }
