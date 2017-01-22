@@ -70,18 +70,21 @@ namespace OrleansHttp
             
 
             string dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            
-            app.UseFileServer(new FileServerOptions()
+            string path = Path.Combine(dir, @"Static");
+            if (Directory.Exists(path))
             {
-                RequestPath = PathString.Empty,
-                FileSystem = new PhysicalFileSystem(Path.Combine(dir, @"Static")),
-            });
+                app.UseFileServer(new FileServerOptions()
+                {
+                    RequestPath = PathString.Empty,
+                    FileSystem = new PhysicalFileSystem(path),
+                });
 
-            app.UseStaticFiles(new StaticFileOptions()
-            {
-                RequestPath = new PathString("/Static"),
-                FileSystem = new PhysicalFileSystem(Path.Combine(dir, @"Static"))
-            });
+                app.UseStaticFiles(new StaticFileOptions()
+                {
+                    RequestPath = new PathString("/Static"),
+                    FileSystem = new PhysicalFileSystem(path)
+                });
+            }
             app.Use(HandleRequest);
         }
     }
