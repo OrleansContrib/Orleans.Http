@@ -94,7 +94,7 @@ namespace OrleansHttp
                     yield return null;
                     continue;
                 }
-                yield return JsonConvert.DeserializeObject(value, param.ParameterType);
+                yield return JsonConvert.DeserializeObject(value, param.ParameterType, ExtensionMethods.jsonSerializerSettings);
             }
         }
 
