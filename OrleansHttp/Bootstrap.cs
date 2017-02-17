@@ -1,9 +1,9 @@
-﻿using Microsoft.Owin.Hosting;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Owin.Hosting;
 using Orleans;
 using Orleans.Providers;
 using Orleans.Runtime;
-using System;
-using System.Threading.Tasks;
 
 namespace OrleansHttp
 {

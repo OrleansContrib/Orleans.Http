@@ -73,7 +73,6 @@
   <ItemGroup>
     <Compile Include="ITestGrain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\orleans.codegen.cs" />
     <Compile Include="TestGrain.cs" />
   </ItemGroup>
   <ItemGroup>
