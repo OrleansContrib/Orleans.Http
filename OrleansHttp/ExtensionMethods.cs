@@ -9,10 +9,11 @@ namespace OrleansHttp
 {
     public static class ExtensionMethods
     {
+        public static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.Auto};
         public static Task ReturnJson(this IOwinContext context, object value)
         {
             context.Response.ContentType = "application/json";
-            return context.Response.WriteAsync(JsonConvert.SerializeObject(value));
+            return context.Response.WriteAsync(JsonConvert.SerializeObject(value, jsonSerializerSettings));
         }
 
         public static Task ReturnError(this IOwinContext context, Exception ex)
