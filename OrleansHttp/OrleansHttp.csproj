@@ -97,6 +97,7 @@
   <ItemGroup>
     <Compile Include="Bootstrap.cs" />
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="GrainCaller.cs" />
     <Compile Include="GrainController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Router.cs" />
