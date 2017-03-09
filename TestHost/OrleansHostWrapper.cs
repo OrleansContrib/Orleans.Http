@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Net;
-using System.Threading.Tasks;
-
-using Orleans.Runtime.Host;
-using System.Reflection;
-using System.IO;
 using Orleans.Runtime.Configuration;
+using Orleans.Runtime.Host;
 using OrleansHttp;
 
 namespace TestHost
