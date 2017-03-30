@@ -89,11 +89,10 @@ These are (in order):
 My results look like this (running in `Release` mode):
 
 ```
-Time for direct connection tests: 5052ms
-Time for HTTP connection tests: 5988ms for http://localhost:8080/grain/ITestGrain/0/Test/
-Time for HTTP connection tests: 7685ms for http://localhost:8080/pinggrain
-Time for HTTP connection tests: 1247ms for http://localhost:8080/ping
-Reflection overhead = -1697 = -28%
+           Method |      Mean |    StdErr |    StdDev |
+----------------- |---------- |---------- |---------- |
+ DirectConnection | 1.5810 ms | 0.0161 ms | 0.1055 ms |
+   HttpConnection | 2.8601 ms | 0.0329 ms | 0.1317 ms |
 ```
 
 I can't explain why the tests appear to show that reflection over HTTP is faster than without reflection over HTTP.
