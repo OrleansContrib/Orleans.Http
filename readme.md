@@ -71,22 +71,7 @@ Note, you can use `GET`, `POST` or `PUT` to send messages to your grains.
 
 ## Benchmarking
 
-The project is currently configured for benchmarking, in an attempt to ensure performance
-is acceptable for real usage. Micro-benchmarks are not a perfect way to understand the full
-runtime characteristics of a system, but they are useful to isolate the performance cost of a feature.
-
-If you hit `[F5]` on the `TestHost` project, the application will run through some micro-benchmarks.
-
-It does a warmup round initially before sending 10,000 messages sequentially using different approaches.
-
-These are (in order):
-
-* Calling a grain directly using the conventional approach
-* Calling a grain using reflection over HTTP
-* Calling a grain over HTTP, but without reflection (as a reference)
-* Calling the HTTP controller, without entering Orleans (as a reference)
-
-My results look like this (running in `Release` mode):
+Using [benchmark.net](https://github.com/dotnet/BenchmarkDotNet) my results look like this (running in `Release` mode):
 
 ```
            Method |      Mean |    StdErr |    StdDev |
@@ -94,8 +79,6 @@ My results look like this (running in `Release` mode):
  DirectConnection | 1.5810 ms | 0.0161 ms | 0.1055 ms |
    HttpConnection | 2.8601 ms | 0.0329 ms | 0.1317 ms |
 ```
-
-I can't explain why the tests appear to show that reflection over HTTP is faster than without reflection over HTTP.
 
 ## Configuration
 
