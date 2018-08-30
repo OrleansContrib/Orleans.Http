@@ -84,7 +84,7 @@ Using [benchmark.net](https://github.com/dotnet/BenchmarkDotNet) my results look
 
 The API supports the following attributes in the configuration:
 
-* `Port` : Set the the number for the api to listen on.
+* `Port` : Set the number for the api to listen on.
 * `Username` : Set a username for accessing the api (basic auth).
 * `Password` : Set a password for accessing the api (basic auth).
 
