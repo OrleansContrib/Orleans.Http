@@ -4,6 +4,9 @@ on:
   pull_request:
     branches: 
       - master
+  push:
+    branches:
+      - release
 
 jobs:
   build:
@@ -19,4 +22,10 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release
     - name: Test
-      run: dotnet test --no-build
+      run: dotnet test --configuration Release --no-build
+    - name: Pack
+      run: dotnet pack --configuration Release --no-build --output packages
+      if: github.ref == 'release'
+    - name: Push
+      run: dotnet nuget push packages/ --api-key ${{ secrets.NUGET_KEY }}
+      if: github.ref == 'release'
