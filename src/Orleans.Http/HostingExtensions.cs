@@ -31,6 +31,11 @@ namespace Orleans.Http
             typeof(FromBodyAttribute)
         };
 
+        public static IServiceCollection AddGrainRouter(this IServiceCollection services)
+        {
+            return services.AddSingleton<GrainRouteDispatcher>();
+        }
+
         public static IEndpointRouteBuilder MapGrains(this IEndpointRouteBuilder routes, string prefix = "")
         {
             // Normalize Prefix
@@ -45,7 +50,7 @@ namespace Orleans.Http
 
             var sp = routes.ServiceProvider;
 
-            var clusterClient = sp.GetRequiredService<IClusterClient>();
+            var dispatcher = sp.GetRequiredService<GrainRouteDispatcher>();
             var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger("Orleans.Http.GrainRouteMapper");
             var appPartsMgr = sp.GetRequiredService<IApplicationPartManager>();
 
@@ -59,14 +64,14 @@ namespace Orleans.Http
             // Map each grain type to a route based on the attributes
             foreach (var grainType in grainTypesToMap)
             {
-                routesCreated += MapGrainToRoute(routes, grainType, prefix, clusterClient, logger);
+                routesCreated += MapGrainToRoute(routes, grainType, prefix, dispatcher, logger);
             }
 
             logger.LogInformation($"{routesCreated} route(s) were created for grains.");
             return routes;
         }
 
-        private static int MapGrainToRoute(IEndpointRouteBuilder routes, Type grainType, string prefix, IClusterClient clusterClient, ILogger logger)
+        private static int MapGrainToRoute(IEndpointRouteBuilder routes, Type grainType, string prefix, GrainRouteDispatcher dispatcher, ILogger logger)
         {
             logger.LogInformation($"Mapping routes for grain '{grainType.FullName}'...");
 
@@ -108,13 +113,13 @@ namespace Orleans.Http
                         routePattern = RoutePatternBuilder.BuildRoutePattern(prefix, topLevelPattern, grainType.FullName, method.Name, routeAttr.Pattern);
                         httpMethod = "*";
                         mapFunc = routes.Map;
-                        requestDelegate = RouteDelegateBuilder.BuildRouteDelegate(clusterClient, prefix, topLevelPattern, grainType.FullName, routeAttr);
+                        // requestDelegate = RouteDelegateBuilder.BuildRouteDelegate(clusterClient, routePattern, method);
                     }
                     else if (attribute is MethodAttribute methodAttr)
                     {
                         routePattern = RoutePatternBuilder.BuildRoutePattern(prefix, topLevelPattern, grainType.FullName, method.Name, methodAttr.Pattern);
                         httpMethod = methodAttr.Method;
-                        requestDelegate = RouteDelegateBuilder.BuildRouteDelegate(clusterClient, prefix, topLevelPattern, grainType.FullName, methodAttr);
+                        // requestDelegate = RouteDelegateBuilder.BuildRouteDelegate(clusterClient, routePattern, grainType.FullName, methodAttr);
 
                         Func<string, RequestDelegate, IEndpointConventionBuilder> methodMapFunc = default;
 
@@ -146,8 +151,13 @@ namespace Orleans.Http
                         continue;
                     }
 
-                    mapFunc.Invoke(routePattern, requestDelegate);
-                    logger.LogInformation($"[{httpMethod}] [{grainType.FullName}.{method.Name}'] -> {routePattern.RawText} -> {routePattern.ToString()}.");
+                    // mapFunc.Invoke(routePattern, requestDelegate);
+                    dispatcher.RegisterRoute(routePattern, method);
+                    mapFunc.Invoke(routePattern, context =>
+                    {
+                        return dispatcher.Dispatch(routePattern, context);
+                    });
+                    logger.LogInformation($"[{httpMethod}] [{grainType.FullName}.{method.Name}] -> {routePattern.RawText}.");
                     routesRegistered++;
                 }
             }

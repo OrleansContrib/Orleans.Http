@@ -9,6 +9,7 @@ namespace Orleans.Http.Test
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddGrainRouter();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

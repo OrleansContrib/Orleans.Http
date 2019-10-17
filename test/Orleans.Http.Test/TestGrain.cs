@@ -43,7 +43,10 @@ namespace Orleans.Http.Test
 
     public class TestGrain : Grain, ITestGrain
     {
-        public Task Get() => Task.CompletedTask;
+        public Task Get()
+        {
+            return Task.CompletedTask;
+        }
 
         public Task<string> Get2() => Task.FromResult("Get2");
 

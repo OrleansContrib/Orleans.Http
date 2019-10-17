@@ -19,6 +19,7 @@ namespace Orleans.Http.Test
         public async Task EndToEnd()
         {
             this._host.Start();
+            Console.ReadLine();
         }
     }
 }
