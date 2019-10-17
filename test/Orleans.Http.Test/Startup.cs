@@ -23,7 +23,7 @@ namespace Orleans.Http.Test
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrains();
+                endpoints.MapGrains("grains");
             });
         }
     }

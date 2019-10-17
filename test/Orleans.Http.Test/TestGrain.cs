@@ -5,6 +5,7 @@ using Orleans.Http.Abstractions;
 
 namespace Orleans.Http.Test
 {
+    [Route("Test")]
     public interface ITestGrain : IGrainWithGuidKey
     {
         [HttpGet]

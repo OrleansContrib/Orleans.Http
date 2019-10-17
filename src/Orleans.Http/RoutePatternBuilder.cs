@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Routing.Patterns;
-using Orleans.Http.Abstractions;
 
 namespace Orleans.Http
 {

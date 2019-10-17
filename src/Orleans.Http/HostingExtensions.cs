@@ -7,10 +7,8 @@ using Orleans.ApplicationParts;
 using Orleans.Metadata;
 using System.Linq;
 using Orleans.Http.Abstractions;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Routing.Patterns;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 namespace Orleans.Http
@@ -106,20 +104,17 @@ namespace Orleans.Http
                     Func<RoutePattern, RequestDelegate, IEndpointConventionBuilder> mapFunc = default;
                     var httpMethod = string.Empty;
                     RoutePattern routePattern = default;
-                    RequestDelegate requestDelegate = default;
 
                     if (attribute is RouteAttribute routeAttr)
                     {
                         routePattern = RoutePatternBuilder.BuildRoutePattern(prefix, topLevelPattern, grainType.FullName, method.Name, routeAttr.Pattern);
                         httpMethod = "*";
                         mapFunc = routes.Map;
-                        // requestDelegate = RouteDelegateBuilder.BuildRouteDelegate(clusterClient, routePattern, method);
                     }
                     else if (attribute is MethodAttribute methodAttr)
                     {
                         routePattern = RoutePatternBuilder.BuildRoutePattern(prefix, topLevelPattern, grainType.FullName, method.Name, methodAttr.Pattern);
                         httpMethod = methodAttr.Method;
-                        // requestDelegate = RouteDelegateBuilder.BuildRouteDelegate(clusterClient, routePattern, grainType.FullName, methodAttr);
 
                         Func<string, RequestDelegate, IEndpointConventionBuilder> methodMapFunc = default;
 
