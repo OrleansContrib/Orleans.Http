@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.Extensions.Logging;
 
@@ -15,7 +16,8 @@ namespace Orleans.Http
         private const string GRAIN_ID_EXTENSION = "grainIdExtension";
         private readonly IClusterClient _clusterClient;
         private readonly ILogger _logger;
-        private readonly Dictionary<RoutePattern, (GrainIdType IdType, MethodInfo Method)> _routes = new Dictionary<RoutePattern, (GrainIdType, MethodInfo)>();
+        // private readonly Dictionary<string, (GrainIdType IdType, MethodInfo Method)> _routes = new Dictionary<string, (GrainIdType, MethodInfo)>();
+        private readonly Dictionary<string, GrainInvoker> _routes = new Dictionary<string, GrainInvoker>();
 
         public GrainRouter(IClusterClient clusterClient, ILoggerFactory loggerFactory)
         {
@@ -23,32 +25,30 @@ namespace Orleans.Http
             this._logger = loggerFactory.CreateLogger<GrainRouter>();
         }
 
-        public void RegisterRoute(RoutePattern pattern, MethodInfo method)
+        public void RegisterRoute(string pattern, MethodInfo method)
         {
             var grainInterfaceType = method.DeclaringType;
             var grainIdType = this.GetGrainIdType(grainInterfaceType);
-            this._routes[pattern] = (grainIdType, method);
+            this._routes[pattern] = new GrainInvoker(this._clusterClient, grainIdType, method);
         }
 
-        public async Task Dispatch(RoutePattern pattern, HttpContext context)
+        public Task Dispatch(HttpContext context)
         {
-            var match = this._routes[pattern];
-            var method = match.Method;
-            var grainIdType = match.IdType;
-            var grainType = method.DeclaringType;
+            var endpoint = (RouteEndpoint)context.GetEndpoint();
+            var pattern = endpoint.RoutePattern;
+            // At this point we are sure we have a patter and an invoker since a route was match for that particular endpoint
+            var invoker = this._routes[pattern.RawText];
 
-            IGrain grain = this.GetGrain(pattern, grainType, grainIdType, context);
+            IGrain grain = this.GetGrain(pattern, invoker.GrainType, invoker.GrainIdType, context);
+
             if (grain == null)
             {
+                // We only faw here if the grainId is mal formed
                 context.Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest;
-                return;
+                return Task.CompletedTask;
             }
 
-            // TODO: Implement proper parameter binding
-            // TODO: Receive result and write to the HttpContext.Response
-            await ((Task)method.Invoke(grain, null));
-
-            return;
+            return invoker.Invoke(grain, context);
         }
 
         private IGrain GetGrain(RoutePattern pattern, Type grainType, GrainIdType grainIdType, HttpContext context)

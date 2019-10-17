@@ -146,12 +146,8 @@ namespace Orleans.Http
                         continue;
                     }
 
-                    // mapFunc.Invoke(routePattern, requestDelegate);
-                    dispatcher.RegisterRoute(routePattern, method);
-                    mapFunc.Invoke(routePattern, context =>
-                    {
-                        return dispatcher.Dispatch(routePattern, context);
-                    });
+                    dispatcher.RegisterRoute(routePattern.RawText, method);
+                    mapFunc.Invoke(routePattern, dispatcher.Dispatch);
                     logger.LogInformation($"[{httpMethod}] [{grainType.FullName}.{method.Name}] -> {routePattern.RawText}.");
                     routesRegistered++;
                 }
