@@ -31,7 +31,7 @@ namespace Orleans.Http
 
         public static IServiceCollection AddGrainRouter(this IServiceCollection services)
         {
-            return services.AddSingleton<GrainRouteDispatcher>();
+            return services.AddSingleton<GrainRouter>();
         }
 
         public static IEndpointRouteBuilder MapGrains(this IEndpointRouteBuilder routes, string prefix = "")
@@ -48,7 +48,7 @@ namespace Orleans.Http
 
             var sp = routes.ServiceProvider;
 
-            var dispatcher = sp.GetRequiredService<GrainRouteDispatcher>();
+            var dispatcher = sp.GetRequiredService<GrainRouter>();
             var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger("Orleans.Http.GrainRouteMapper");
             var appPartsMgr = sp.GetRequiredService<IApplicationPartManager>();
 
@@ -69,7 +69,7 @@ namespace Orleans.Http
             return routes;
         }
 
-        private static int MapGrainToRoute(IEndpointRouteBuilder routes, Type grainType, string prefix, GrainRouteDispatcher dispatcher, ILogger logger)
+        private static int MapGrainToRoute(IEndpointRouteBuilder routes, Type grainType, string prefix, GrainRouter dispatcher, ILogger logger)
         {
             logger.LogInformation($"Mapping routes for grain '{grainType.FullName}'...");
 

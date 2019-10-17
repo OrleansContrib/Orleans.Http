@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Orleans.Http
 {
-    internal class GrainRouteDispatcher
+    internal class GrainRouter
     {
         private const string GRAIN_ID = "grainId";
         private const string GRAIN_ID_EXTENSION = "grainIdExtension";
@@ -17,10 +17,10 @@ namespace Orleans.Http
         private readonly ILogger _logger;
         private readonly Dictionary<RoutePattern, (GrainIdType IdType, MethodInfo Method)> _routes = new Dictionary<RoutePattern, (GrainIdType, MethodInfo)>();
 
-        public GrainRouteDispatcher(IClusterClient clusterClient, ILoggerFactory loggerFactory)
+        public GrainRouter(IClusterClient clusterClient, ILoggerFactory loggerFactory)
         {
             this._clusterClient = clusterClient;
-            this._logger = loggerFactory.CreateLogger<GrainRouteDispatcher>();
+            this._logger = loggerFactory.CreateLogger<GrainRouter>();
         }
 
         public void RegisterRoute(RoutePattern pattern, MethodInfo method)
