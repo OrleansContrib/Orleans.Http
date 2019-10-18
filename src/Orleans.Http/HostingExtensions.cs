@@ -24,11 +24,6 @@ namespace Orleans.Http
 
         private static readonly Type _routeAttributeType = typeof(RouteAttribute);
 
-        private static readonly List<Type> _parameterAttributeTypes = new List<Type>{
-            typeof(FromQueryAttribute),
-            typeof(FromBodyAttribute)
-        };
-
         public static IServiceCollection AddGrainRouter(this IServiceCollection services)
         {
             return services.AddSingleton<GrainRouter>();

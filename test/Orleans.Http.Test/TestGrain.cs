@@ -20,7 +20,7 @@ namespace Orleans.Http.Test
         [HttpPost("Post2")]
         Task Post2();
 
-        [HttpGet("Get3")]
+        [HttpGet("{grainId}/Get3/{hello}")]
         Task<string> Get3(string hello);
 
         [HttpPost("Post3")]
