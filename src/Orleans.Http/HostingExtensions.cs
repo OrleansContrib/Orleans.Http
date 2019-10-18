@@ -52,7 +52,7 @@ namespace Orleans.Http
             var sp = routes.ServiceProvider;
 
             var dispatcher = sp.GetRequiredService<GrainRouter>();
-            var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger("Orleans.Http.GrainRouteMapper");
+            var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger<GrainRouter>();
             var appPartsMgr = sp.GetRequiredService<IApplicationPartManager>();
 
             var grainInterfaceFeature = appPartsMgr.CreateAndPopulateFeature<GrainInterfaceFeature>();
