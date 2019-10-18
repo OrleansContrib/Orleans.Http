@@ -26,7 +26,15 @@ namespace Orleans.Http
 
         public static IServiceCollection AddGrainRouter(this IServiceCollection services)
         {
-            return services.AddSingleton<GrainRouter>();
+            return services
+                .AddSingleton<MediaTypeManager>()
+                .AddSingleton<GrainRouter>();
+        }
+
+        public static IServiceCollection AddJsonMediaType(this IServiceCollection services)
+        {
+            return services
+                .AddSingleton<IMediaTypeHandler, JsonMediaTypeHandler>();
         }
 
         public static IEndpointRouteBuilder MapGrains(this IEndpointRouteBuilder routes, string prefix = "")

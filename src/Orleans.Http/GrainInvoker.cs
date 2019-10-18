@@ -6,16 +6,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Orleans.Http.Abstractions;
-using System.IO;
 
 namespace Orleans.Http
 {
     internal sealed class GrainInvoker
     {
-        // TODO: Support external serializers mapped to the application type
-        private static readonly JsonSerializer _serializer = new JsonSerializer();
         private static readonly List<Type> _parameterAttributeTypes = new List<Type>{
             typeof(FromBodyAttribute),
             typeof(FromQueryAttribute)
@@ -24,6 +20,7 @@ namespace Orleans.Http
         private readonly Dictionary<string, Parameter> _parameters = new Dictionary<string, Parameter>(StringComparer.OrdinalIgnoreCase);
         private readonly MethodInfo _methodInfo;
         private readonly ILogger _logger;
+        private readonly MediaTypeManager _mediaTypeManager;
         private MethodInfo _getResult;
         public Type GrainType => this._methodInfo.DeclaringType;
         public GrainIdType GrainIdType { get; private set; }
@@ -33,6 +30,7 @@ namespace Orleans.Http
             this.GrainIdType = grainIdType;
             this._logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<GrainInvoker>();
             this._methodInfo = methodInfo;
+            this._mediaTypeManager = serviceProvider.GetRequiredService<MediaTypeManager>();
 
             this.BuildResultDelegate();
             this.BuildParameterMap();
@@ -40,7 +38,7 @@ namespace Orleans.Http
 
         public async Task Invoke(IGrain grain, HttpContext context)
         {
-            var grainCall = (Task)this._methodInfo.Invoke(grain, this.GetParameters(context));
+            var grainCall = (Task)this._methodInfo.Invoke(grain, await this.GetParameters(context));
             await grainCall;
 
             if (this._getResult != null)
@@ -48,14 +46,17 @@ namespace Orleans.Http
                 object result = this._getResult.Invoke(null, new[] { grainCall });
                 if (result != null)
                 {
-                    // TODO: Check if it is a complex type before serializinng
-                    // TODO: Support external serializers mapped to the application type
-                    await context.Response.WriteAsync(JsonConvert.SerializeObject(result));
+                    context.Response.ContentType = context.Request.ContentType;
+                    var serialized = await this._mediaTypeManager.Serialize(context.Request.ContentType, result, context.Response.BodyWriter);
+                    if (!serialized)
+                    {
+                        await context.Response.WriteAsync(result.ToString());
+                    }
                 }
             }
         }
 
-        private object[] GetParameters(HttpContext context)
+        private async ValueTask<object[]> GetParameters(HttpContext context)
         {
             object[] parameterValues = default;
             if (this._parameters.Count > 0)
@@ -68,7 +69,7 @@ namespace Orleans.Http
                     var param = this._parameters.ElementAt(i).Value;
                     if (param.Source == ParameterSource.Body)
                     {
-                        parameterValues[i] = this.ParseParameter(param, context);
+                        parameterValues[i] = await this.ParseParameter(param, context);
                     }
                     else if (param.Source == ParameterSource.Route &&
                         routeParameters.TryGetValue(param.Name, out object routeParam))
@@ -150,16 +151,11 @@ namespace Orleans.Http
             }
         }
 
-        private object ParseParameter(Parameter parameterType, HttpContext context)
+        private async ValueTask<object> ParseParameter(Parameter parameterType, HttpContext context)
         {
-            if (context.Request.Body.Length < 1) return null;
-
-            // TODO: Support external serializers mapped to the application type
-            using var reader = new StreamReader(context.Request.Body, leaveOpen: true);
-            using var jsonReader = new JsonTextReader(reader);
             try
             {
-                return _serializer.Deserialize(jsonReader, parameterType.Type);
+                return await this._mediaTypeManager.Deserialize(context.Request.ContentType, context.Request.BodyReader, parameterType.Type, context.RequestAborted);
             }
             catch (Exception exc)
             {
