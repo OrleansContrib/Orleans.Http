@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Orleans.Concurrency;
 using Orleans.Http.Abstractions;
+using ProtoBuf;
 
 namespace Orleans.Http.Test
 {
@@ -45,9 +46,12 @@ namespace Orleans.Http.Test
         Task<TestPayload> Post7([FromBody]TestPayload body);
     }
 
+    [ProtoContract]
     public class TestPayload
     {
+        [ProtoMember(1)]
         public int Number { get; set; }
+        [ProtoMember(2)]
         public string Text { get; set; }
     }
 

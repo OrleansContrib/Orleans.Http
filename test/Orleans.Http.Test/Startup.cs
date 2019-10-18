@@ -9,7 +9,7 @@ namespace Orleans.Http.Test
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrainRouter().AddJsonMediaType();
+            services.AddGrainRouter().AddJsonMediaType().AddProtobufMediaType();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

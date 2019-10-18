@@ -7,15 +7,16 @@ using System.Threading;
 
 namespace Orleans.Http
 {
-    public sealed class JsonMediaTypeHandler : IMediaTypeHandler
+    internal sealed class JsonMediaTypeHandler : IMediaTypeHandler
     {
-        // TODO: Allow customization
-        private static readonly JsonSerializerOptions _settings = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
         private const string MEDIA_TYPE = "application/json";
+        private readonly JsonSerializerOptions _options;
         public string MediaType => MEDIA_TYPE;
+
+        public JsonMediaTypeHandler(JsonSerializerOptions options)
+        {
+            this._options = options;
+        }
 
         public async ValueTask<object> Deserialize(PipeReader reader, Type type, CancellationToken cancellationToken)
         {
@@ -26,7 +27,7 @@ namespace Orleans.Http
                 var readResult = await reader.ReadAsync(cancellationToken);
                 var buffer = readResult.Buffer;
 
-                model = JsonSerializer.Deserialize(buffer.FirstSpan, type, _settings);
+                model = JsonSerializer.Deserialize(buffer.FirstSpan, type, _options);
 
                 reader.AdvanceTo(buffer.Start, buffer.End);
 
@@ -38,7 +39,7 @@ namespace Orleans.Http
 
         public async ValueTask Serialize(object obj, PipeWriter writer)
         {
-            await JsonSerializer.SerializeAsync(writer.AsStream(), obj, obj.GetType(), _settings);
+            await JsonSerializer.SerializeAsync(writer.AsStream(), obj, obj.GetType(), _options);
         }
     }
 }

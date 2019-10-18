@@ -9,4 +9,8 @@
     <PackageReference Include="Microsoft.Orleans.Runtime.Abstractions" Version="3.0.0-rc2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Legacy\**" />
+  </ItemGroup>
+
 </Project>

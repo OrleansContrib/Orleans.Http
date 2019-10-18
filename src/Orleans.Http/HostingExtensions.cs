@@ -10,6 +10,7 @@ using Orleans.Http.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.AspNetCore.Http;
+using System.Text.Json;
 
 namespace Orleans.Http
 {
@@ -31,10 +32,14 @@ namespace Orleans.Http
                 .AddSingleton<GrainRouter>();
         }
 
-        public static IServiceCollection AddJsonMediaType(this IServiceCollection services)
+        public static IServiceCollection AddJsonMediaType(this IServiceCollection services, Action<JsonSerializerOptions> configure = null)
         {
+            var options = new JsonSerializerOptions();
+            options.PropertyNameCaseInsensitive = true;
+            options.AllowTrailingCommas = true;
+            configure?.Invoke(options);
             return services
-                .AddSingleton<IMediaTypeHandler, JsonMediaTypeHandler>();
+                .AddSingleton<IMediaTypeHandler, JsonMediaTypeHandler>(sp => new JsonMediaTypeHandler(options));
         }
 
         public static IEndpointRouteBuilder MapGrains(this IEndpointRouteBuilder routes, string prefix = "")

@@ -23,4 +23,8 @@
     <ProjectReference Include="..\Orleans.Http.Abstractions\Orleans.Http.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Legacy\**" />
+  </ItemGroup>
+
 </Project>
