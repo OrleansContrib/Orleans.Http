@@ -16,7 +16,7 @@ namespace Orleans.Http
         private IServiceProvider _serviceProvider;
         private readonly IClusterClient _clusterClient;
         private readonly ILogger _logger;
-        private readonly Dictionary<string, GrainInvoker> _routes = new Dictionary<string, GrainInvoker>();
+        private readonly Dictionary<string, GrainInvoker> _routes = new Dictionary<string, GrainInvoker>(StringComparer.InvariantCultureIgnoreCase);
 
         public GrainRouter(IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
         {
@@ -25,11 +25,13 @@ namespace Orleans.Http
             this._logger = loggerFactory.CreateLogger<GrainRouter>();
         }
 
-        public void RegisterRoute(string pattern, MethodInfo method)
+        public bool RegisterRoute(string pattern, MethodInfo method)
         {
+            if (this._routes.ContainsKey(pattern)) return false;
             var grainInterfaceType = method.DeclaringType;
             var grainIdType = this.GetGrainIdType(grainInterfaceType);
             this._routes[pattern] = new GrainInvoker(this._serviceProvider, grainIdType, method);
+            return true;
         }
 
         public Task Dispatch(HttpContext context)

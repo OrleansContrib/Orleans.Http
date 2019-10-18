@@ -149,7 +149,11 @@ namespace Orleans.Http
                         continue;
                     }
 
-                    dispatcher.RegisterRoute(routePattern.RawText, method);
+                    if (!dispatcher.RegisterRoute(routePattern.RawText, method))
+                    {
+                        throw new InvalidOperationException($"Dupplicated route pattern '{routePattern.RawText}'. A route with this pattern already exist.");
+                    }
+
                     mapFunc.Invoke(routePattern, dispatcher.Dispatch);
                     logger.LogInformation($"[{httpMethod}] [{grainType.FullName}.{method.Name}] -> {routePattern.RawText}.");
                     routesRegistered++;

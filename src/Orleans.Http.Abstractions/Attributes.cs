@@ -2,7 +2,7 @@ using System;
 
 namespace Orleans.Http.Abstractions
 {
-    [AttributeUsage(AttributeTargets.Interface | AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Interface | AttributeTargets.Method, AllowMultiple = true)]
     public class RouteAttribute : Attribute
     {
         public string Pattern { get; private set; }
@@ -28,28 +28,28 @@ namespace Orleans.Http.Abstractions
         }
     }
 
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public sealed class HttpGetAttribute : MethodAttribute
     {
         public override string Method { get => "GET"; }
         public HttpGetAttribute(string pattern = "", string name = "") : base(pattern, name) { }
     }
 
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public sealed class HttpPostAttribute : MethodAttribute
     {
         public override string Method { get => "POST"; }
         public HttpPostAttribute(string pattern = "", string name = "") : base(pattern, name) { }
     }
 
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public sealed class HttpPutAttribute : MethodAttribute
     {
         public override string Method { get => "PUT"; }
         public HttpPutAttribute(string pattern = "", string name = "") : base(pattern, name) { }
     }
 
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public sealed class HttpDeleteAttribute : MethodAttribute
     {
         public override string Method { get => "DELETE"; }
