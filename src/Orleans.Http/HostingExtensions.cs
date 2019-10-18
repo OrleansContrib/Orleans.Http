@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
+using ASPNetAuthorizeAttribute = Microsoft.AspNetCore.Authorization.AuthorizeAttribute;
 
 namespace Orleans.Http
 {
@@ -24,6 +25,7 @@ namespace Orleans.Http
         };
 
         private static readonly Type _routeAttributeType = typeof(RouteAttribute);
+        private static readonly Type _authorizeAttributeType = typeof(AuthorizeAttribute);
 
         public static IServiceCollection AddGrainRouter(this IServiceCollection services)
         {
@@ -82,7 +84,8 @@ namespace Orleans.Http
             logger.LogInformation($"Mapping routes for grain '{grainType.FullName}'...");
 
             // First we check if the grain has the [RouteAttribute] applied to the interface so we capture its info for as a prefix
-            var topRouteAttr = (RouteAttribute)grainType.GetCustomAttributes(false).Where(attr => attr.GetType() == _routeAttributeType).SingleOrDefault();
+            var topRouteAttr = (RouteAttribute)grainType.GetCustomAttributes(true).Where(attr => attr.GetType() == _routeAttributeType).SingleOrDefault();
+            var topAuthorizeAttr = (AuthorizeAttribute)grainType.GetCustomAttributes(true).Where(attr => attr.GetType() == _authorizeAttributeType).SingleOrDefault();
             string topLevelPattern = string.Empty;
             string topLevelRouteName = string.Empty;
 
@@ -98,14 +101,16 @@ namespace Orleans.Http
             }
 
             // Then we get only the methods that has any of our supported attributes applied to it
-            var methods = grainType.GetMethods().Where(m => m.GetCustomAttributes(false)
+            var methods = grainType.GetMethods().Where(m => m.GetCustomAttributes(true)
                             .Any(attr => attr.GetType() == _routeAttributeType || _methodAttributeTypes.Contains(attr.GetType()))).ToArray();
 
             int routesRegistered = 0;
             foreach (var method in methods)
             {
-                var methodAttributes = method.GetCustomAttributes(false)
-                    .Where(attr => attr.GetType() == _routeAttributeType || _methodAttributeTypes.Contains(attr.GetType()));
+                var methodAttributes = method.GetCustomAttributes(true)
+                    .Where(attr => attr.GetType() == _routeAttributeType ||
+                        attr.GetType() == _authorizeAttributeType ||
+                        _methodAttributeTypes.Contains(attr.GetType()));
 
                 foreach (var attribute in methodAttributes)
                 {
@@ -159,7 +164,30 @@ namespace Orleans.Http
                         throw new InvalidOperationException($"Dupplicated route pattern '{routePattern.RawText}'. A route with this pattern already exist.");
                     }
 
-                    mapFunc.Invoke(routePattern, dispatcher.Dispatch);
+                    var route = mapFunc.Invoke(routePattern, dispatcher.Dispatch);
+
+                    var methodAuthorizeAttr = (AuthorizeAttribute)methodAttributes.FirstOrDefault(attr => attr is AuthorizeAttribute);
+                    AuthorizeAttribute authorizeAttr = default;
+
+                    if (methodAuthorizeAttr != null)
+                    {
+                        authorizeAttr = methodAuthorizeAttr;
+                    }
+                    else if (topAuthorizeAttr != null)
+                    {
+                        authorizeAttr = methodAuthorizeAttr;
+                    }
+
+                    if (authorizeAttr != null)
+                    {
+                        route.RequireAuthorization(
+                            new ASPNetAuthorizeAttribute(authorizeAttr.Policy)
+                            {
+                                Roles = authorizeAttr.Roles,
+                                AuthenticationSchemes = authorizeAttr.AuthenticationSchemes
+                            });
+                    }
+
                     logger.LogInformation($"[{httpMethod}] [{grainType.FullName}.{method.Name}] -> {routePattern.RawText}.");
                     routesRegistered++;
                 }
@@ -178,9 +206,9 @@ namespace Orleans.Http
                 var grainType = grainInterfaceMetadata.InterfaceType;
 
                 // Only add to the list grains that either have the top-level route attribute or has one of the method attributes
-                if (grainType.GetCustomAttributes(false).Contains(_routeAttributeType) ||
+                if (grainType.GetCustomAttributes(true).Contains(_routeAttributeType) ||
                     grainType.GetMethods()
-                        .Any(m => m.GetCustomAttributes(false)
+                        .Any(m => m.GetCustomAttributes(true)
                             .Any(attr => attr.GetType() == _routeAttributeType || _methodAttributeTypes.Contains(attr.GetType()))))
                 {
                     grainTypesToMap.Add(grainType);

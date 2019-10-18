@@ -1,5 +1,8 @@
 using System;
+using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Orleans.Concurrency;
 using Orleans.Http.Abstractions;
 using ProtoBuf;
@@ -9,6 +12,8 @@ namespace Orleans.Http.Test
     [Route("Test")]
     public interface ITestGrain : IGrainWithGuidKey
     {
+        Task PrivateMethod();
+
         [HttpGet]
         Task Get();
 
@@ -44,6 +49,14 @@ namespace Orleans.Http.Test
 
         [HttpPost]
         Task<TestPayload> Post7([FromBody]TestPayload body);
+
+        [Authorize]
+        [HttpGet]
+        Task<AuthResponse> GetWithAuth();
+
+        [Authorize(Roles = "admin")]
+        [HttpGet]
+        Task<AuthResponse> GetWithAuthAdmin();
     }
 
     [ProtoContract]
@@ -55,8 +68,24 @@ namespace Orleans.Http.Test
         public string Text { get; set; }
     }
 
+    [ProtoContract]
+    public class AuthResponse
+    {
+        [ProtoMember(1)]
+        public string User { get; set; }
+        [ProtoMember(2)]
+        public string Role { get; set; }
+    }
+
     public class TestGrain : Grain, ITestGrain
     {
+        private readonly IHttpContextAccessor _httpConntextAcessor;
+
+        public TestGrain(IHttpContextAccessor acessor)
+        {
+            this._httpConntextAcessor = acessor;
+        }
+
         public Task Get()
         {
             return Task.CompletedTask;
@@ -69,6 +98,8 @@ namespace Orleans.Http.Test
         public Task<string> Get4([FromQuery] string hello) => Task.FromResult(hello);
 
         public Task<Immutable<string>> Get5([FromQuery] Immutable<string> hello) => Task.FromResult(hello.Value.AsImmutable());
+
+        public Task PrivateMethod() => throw new NotSupportedException();
 
         public Task Post() => Task.CompletedTask;
 
@@ -89,5 +120,23 @@ namespace Orleans.Http.Test
         }
 
         public Task<TestPayload> Post7([FromBody] TestPayload body) => Task.FromResult(body);
+
+        public Task<AuthResponse> GetWithAuth()
+        {
+            return Task.FromResult(new AuthResponse
+            {
+                User = this._httpConntextAcessor.HttpContext.User.FindFirst(ClaimTypes.Name).Value,
+                Role = this._httpConntextAcessor.HttpContext.User.FindFirst(ClaimTypes.Role).Value
+            });
+        }
+
+        public Task<AuthResponse> GetWithAuthAdmin()
+        {
+            return Task.FromResult(new AuthResponse
+            {
+                User = this._httpConntextAcessor.HttpContext.User.FindFirst(ClaimTypes.Name).Value,
+                Role = this._httpConntextAcessor.HttpContext.User.FindFirst(ClaimTypes.Role).Value
+            });
+        }
     }
 }

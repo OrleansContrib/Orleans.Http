@@ -61,4 +61,14 @@ namespace Orleans.Http.Abstractions
 
     [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class FromQueryAttribute : Attribute { }
+
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+    public class AuthorizeAttribute : Attribute
+    {
+        public AuthorizeAttribute() { }
+        public AuthorizeAttribute(string policy) { this.Policy = policy; }
+        public string AuthenticationSchemes { get; set; }
+        public string Policy { get; set; }
+        public string Roles { get; set; }
+    }
 }

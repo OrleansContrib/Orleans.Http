@@ -58,7 +58,7 @@ namespace Orleans.Http
             }
             catch (Exception exc)
             {
-                this._logger.LogWarning(exc, $"Failure to deserialize body into '{handler.MediaType}' using {handler.GetType().FullName}: {exc.Message}.");
+                this._logger.LogWarning(exc, $"Failure to deserialize body into '{mediaType}': {exc.Message}.");
             }
 
             return default;

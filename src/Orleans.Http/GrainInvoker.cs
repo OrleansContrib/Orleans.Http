@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Orleans.Http.Abstractions;
 
 namespace Orleans.Http
@@ -46,8 +47,18 @@ namespace Orleans.Http
                 object result = this._getResult.Invoke(null, new[] { grainCall });
                 if (result != null)
                 {
-                    context.Response.ContentType = context.Request.ContentType;
-                    var serialized = await this._mediaTypeManager.Serialize(context.Request.ContentType, result, context.Response.BodyWriter);
+                    string contentType = string.Empty;
+                    if (context.Request.Headers.TryGetValue("accept", out StringValues val))
+                    {
+                        contentType = val.FirstOrDefault();
+                    }
+                    else
+                    {
+                        contentType = context.Request.ContentType;
+                    }
+                    context.Response.ContentType = contentType;
+
+                    var serialized = await this._mediaTypeManager.Serialize(contentType, result, context.Response.BodyWriter);
                     if (!serialized)
                     {
                         await context.Response.WriteAsync(result.ToString());
