@@ -13,8 +13,7 @@ namespace Orleans.Http.MediaTypes.Protobuf
 
         public ValueTask<object> Deserialize(PipeReader reader, Type type, CancellationToken cancellationToken)
         {
-            using var stream = new PipeStream(reader, false);
-            var model = Serializer.Deserialize(type, stream);
+            var model = Serializer.Deserialize(type, reader.AsStream());
 
             return new ValueTask<object>(model);
         }

@@ -1,17 +1,13 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using ProtoBuf;
 using Xunit;
 
 namespace Orleans.Http.Test
