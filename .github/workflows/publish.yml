@@ -1,9 +1,6 @@
-name: CI
+name: Publish
 
 on:
-  pull_request:
-    branches:
-      - master
   push:
     branches:
       - release
@@ -15,6 +12,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+      with:
+        ref: 'release'
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -23,3 +22,7 @@ jobs:
       run: dotnet build --configuration Release
     - name: Test
       run: dotnet test --configuration Release --no-build
+    - name: Pack
+      run: dotnet pack --configuration Release --no-build --output packages /p:Version=1.0.0-preview1
+    - name: Push
+      run: dotnet nuget push packages/ --api-key ${{ secrets.NUGET_KEY }}
