@@ -23,6 +23,7 @@ jobs:
     - name: Test
       run: dotnet test --configuration Release --no-build
     - name: Pack
-      run: dotnet pack --configuration Release --no-build --output packages /p:Version=1.0.0-preview1
+      run: dotnet pack --configuration Release --output packages /p:Version=1.0.0-preview1
     - name: Push
-      run: dotnet nuget push packages/ --no-symbols --api-key ${{ secrets.NUGET_KEY }} --source nuget.org
+      run: |
+        dotnet nuget push packages/*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
