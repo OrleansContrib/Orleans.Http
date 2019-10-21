@@ -5,7 +5,7 @@
    "version": "0.2.0",
    "configurations": [
         {
-            "name": ".NET Core Launch (console)",
+            "name": "Tests",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -18,10 +18,17 @@
             "stopAtEntry": false
         },
         {
-            "name": ".NET Core Attach",
+            "name": "Sample",
             "type": "coreclr",
-            "request": "attach",
-            "processId": "${command:pickProcess}"
+            "request": "launch",
+            "preLaunchTask": "build",
+            // If you have changed target frameworks, make sure to update the program path.
+            "program": "${workspaceFolder}/Samples/OrleansHttp.Host/bin/Debug/netcoreapp3.0/OrleansHttp.Host.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Samples/OrleansHttp.Host",
+            // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
+            "console": "internalConsole",
+            "stopAtEntry": false
         }
     ]
 }
