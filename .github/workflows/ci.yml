@@ -1,8 +1,8 @@
 name: CI
 
-on: 
+on:
   pull_request:
-    branches: 
+    branches:
       - master
   push:
     branches:
@@ -12,7 +12,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v1
     - name: Setup .NET Core
@@ -24,7 +24,7 @@ jobs:
     - name: Test
       run: dotnet test --configuration Release --no-build
     - name: Pack
-      run: dotnet pack --configuration Release --no-build --output packages
+      run: dotnet pack --configuration Release --no-build --output packages /p:Version=1.0.0
       if: github.ref == 'release'
     - name: Push
       run: dotnet nuget push packages/ --api-key ${{ secrets.NUGET_KEY }}
