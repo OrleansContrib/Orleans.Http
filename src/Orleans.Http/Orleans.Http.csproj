@@ -4,24 +4,13 @@
     <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <LangVersion>latest</LangVersion>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup>
     <PackageId>Orleans.Http</PackageId>
     <Title>Microsoft Orleans Http Endpoints</Title>
     <Description>Microsoft Orleans Http Endpoints</Description>
-    <Authors>Gutemberg Ribeiro</Authors>
-    <Product>Orleans Http Endpoints </Product>
-    <PackageLicenseUrl>https://github.com/dotnet/Orleans#license</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/OrleansContrib/Orleans.Http</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/dotnet/orleans/gh-pages/assets/logo_128.png</PackageIconUrl>
-    <PackageTags>Orleans Cloud-Computing Actor-Model Actors Distributed-Systems AspNet Core C# .NET</PackageTags>
-    <PackageReleaseNotes></PackageReleaseNotes>
-    <RepositoryUrl>https://github.com/OrleansContrib/Orleans.Http</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <IncludeSymbols>true</IncludeSymbols>
-    <IncludeSource>true</IncludeSource>
-    <VersionPrefix>1.0.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
