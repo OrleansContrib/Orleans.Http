@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{5BA342D9-1
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orleans.Http.Test", "test\Orleans.Http.Test\Orleans.Http.Test.csproj", "{6C923775-306D-4B3C-AD6D-1D679F405394}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orleans.Http.MediaTypes.Protobuf", "src\Orleans.Http.MediaTypes.Protobuf\Orleans.Http.MediaTypes.Protobuf.csproj", "{8452309D-E2D1-47BF-9094-3C71EA20C5C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,9 +50,22 @@ Global
 		{6C923775-306D-4B3C-AD6D-1D679F405394}.Release|x64.Build.0 = Release|Any CPU
 		{6C923775-306D-4B3C-AD6D-1D679F405394}.Release|x86.ActiveCfg = Release|Any CPU
 		{6C923775-306D-4B3C-AD6D-1D679F405394}.Release|x86.Build.0 = Release|Any CPU
+		{8452309D-E2D1-47BF-9094-3C71EA20C5C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8452309D-E2D1-47BF-9094-3C71EA20C5C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8452309D-E2D1-47BF-9094-3C71EA20C5C8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8452309D-E2D1-47BF-9094-3C71EA20C5C8}.Debug|x64.Build.0 = Debug|Any CPU
+		{8452309D-E2D1-47BF-9094-3C71EA20C5C8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8452309D-E2D1-47BF-9094-3C71EA20C5C8}.Debug|x86.Build.0 = Debug|Any CPU
+		{8452309D-E2D1-47BF-9094-3C71EA20C5C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8452309D-E2D1-47BF-9094-3C71EA20C5C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8452309D-E2D1-47BF-9094-3C71EA20C5C8}.Release|x64.ActiveCfg = Release|Any CPU
+		{8452309D-E2D1-47BF-9094-3C71EA20C5C8}.Release|x64.Build.0 = Release|Any CPU
+		{8452309D-E2D1-47BF-9094-3C71EA20C5C8}.Release|x86.ActiveCfg = Release|Any CPU
+		{8452309D-E2D1-47BF-9094-3C71EA20C5C8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7F8C1ABC-9C15-4845-9B0A-D2D1096402E7} = {3A0FB45D-BE33-4F5A-B501-075944076814}
 		{6C923775-306D-4B3C-AD6D-1D679F405394} = {5BA342D9-1B0F-411F-8A55-4AA6CCED9E66}
+		{8452309D-E2D1-47BF-9094-3C71EA20C5C8} = {3A0FB45D-BE33-4F5A-B501-075944076814}
 	EndGlobalSection
 EndGlobal
