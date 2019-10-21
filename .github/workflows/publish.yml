@@ -25,4 +25,4 @@ jobs:
     - name: Pack
       run: dotnet pack --configuration Release --no-build --output packages /p:Version=1.0.0-preview1
     - name: Push
-      run: dotnet nuget push packages/ --no-symbols --source nuget.org --api-key ${{ secrets.NUGET_KEY }}
+      run: dotnet nuget push packages/ --no-symbols --api-key ${{ secrets.NUGET_KEY }} --source nuget.org
