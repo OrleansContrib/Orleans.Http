@@ -31,9 +31,6 @@ namespace Orleans.Http
             return model;
         }
 
-        public ValueTask Serialize(object obj, PipeWriter writer)
-        {
-            return default;
-        }
+        public ValueTask Serialize(object obj, PipeWriter writer) => throw new NotSupportedException();
     }
 }
