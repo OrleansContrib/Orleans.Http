@@ -10,11 +10,11 @@
 
 [Orleans](https://github.com/dotnet/orleans) is a framework that provides a straight-forward approach to building distributed high-scale computing applications, without the need to learn and apply complex concurrency or other scaling patterns. 
 
-**Orleans.Http** is a package that use ASP.Net Core 3.0 as a frontend endpoint for Orleans grains without the need of controller classes.
+**Orleans.Http** is a package that use ASP.Net Core as a frontend endpoint for Orleans grains without the need of controller classes.
 
-This package leverages AspNet Core 3.0 Endpoint Routing to expose grains as Http endpoints without need of have to implement Controllers. The request is received and processed by grains methods itself. The idea is to perform in a similar way to Controllers without having to add any boilerplate code to your Orleans project.
+This package leverages ASP.NET Core Endpoint Routing to expose grains as HTTP endpoints without need of have to implement Controllers. The request is received and processed by grains methods itself. The idea is to perform in a similar way to Controllers without having to add any boilerplate code to your Orleans project.
 
-At the silo startup, the package look for usage of `[Route]` and `[HttpXXX]` attributes onn grain interface methods and register a route on AspNett Core endpoints route table. When a request arrive to that route, the parameters are extracted from the request, mapped to grain method parameters, and the grain is invoked. If the grain return `Task<T>`, the returning object is serialized back to the caller using one of the registered `IMediaTypeHandler` and added to the Response body. 
+At the silo startup, the package look for usage of `[Route]` and `[HttpXXX]` attributes onn grain interface methods and register a route on ASP.NET Core endpoints route table. When a request arrive to that route, the parameters are extracted from the request, mapped to grain method parameters, and the grain is invoked. If the grain return `Task<T>`, the returning object is serialized back to the caller using one of the registered `IMediaTypeHandler` and added to the Response body. 
 
 # Installation
 
@@ -50,11 +50,11 @@ Paket:
 
 # Serialization and parameter mapping
 
-The serialization of both request and response body is handled by implementations of `IMediaTypeHandler`. The runtime checks the `Content-Type` header of the request and lookup ap for a `IMediaTypeHandler` registered implementation that can deserialize the body with that partticular media type. If one is match, the deserialization happens and the deserialized object is passed to the parameter of the grain method being invoked that is marked with the `[FromBody]` attribute. If there is no serializer registered for that `Content-Type`, it will just set the parameter as null. 
+The serialization of both request and response body is handled by implementations of `IMediaTypeHandler`. The runtime checks the `Content-Type` header of the request and lookup for a `IMediaTypeHandler` registered implementation that can deserialize the body with that partticular media type. If one matches, the deserialization happens and the deserialized object is passed to the parameter of the grain method being invoked that is marked with the `[FromBody]` attribute. If there is no serializer registered for that `Content-Type`, it will just set the parameter as null. 
 
 Whenever the method returns `Task<T>`, the runtime will check if there is an `Accept` header and use it to lookup for a `IMediaTypeHandler` that will then serialize the response back to the caller in the Response body. If there is no `Accept` header, it will then try to serialize the response using the `Content-Type` header instead.
 
-Parameters can be also mapped from both the Route and the Querystring by using `[FromRoute]` and `[FromQuery]` parameter attributes respectively. Those attributes works only for primitive types.
+Parameters can be also mapped from both the Route and the Query string by using `[FromRoute]` and `[FromQuery]` parameter attributes respectively. Those attributes works only for primitive types.
 
 By default, Json (using `System.Text.Json`), XML and Forms are provided with `Orleans.Http` package. Protobuf (protobuf-net) is also available by adding the `Orleans.Http.MediaTypes.Protobuf` package.
 
@@ -73,11 +73,11 @@ public interface IMediaTypeHandler
 
 ## Authentication / Authorizattion
 
-In a similar way to AspNet Core Controllers, this package also allow the developer to leverage AspNet Core 3.0 Authentication/Authorization middleware. Just add `[Authorize]` attribute to the grain method interface and it will just work the same way. Make sure to configure your AspNet Core 3.0 Authentication/Authorizattion middleware.
+In a similar way to ASP.NET Core Controllers, this package also allow the developer to leverage ASP.NET Core Authentication/Authorization middleware. Just add `[Authorize]` attribute to the grain method interface and it will just work the same way. Make sure to configure your ASP.NET Core Authentication/Authorizattion middleware.
 
 # Routes and Attributes
 
-The routes are generated in a similar way as AspNet Core Attribute Routing. By default, no route is generated and all grains are considered private.
+The routes are generated in a similar way as ASP.NET Core Attribute Routing. By default, no route is generated and all grains are considered private.
 
 The `Pattern` property of the attributes define the route to be used. If the `Pattern` property is ommited, the default route is used as the following pattern:
 
@@ -101,11 +101,11 @@ When added to a *Grain Method*, this attribute tells the runtime to route ALL HT
 
 This attribute can be applied only to methods.
 
-The value of `Patttern` property is used to generate the route of that method for a particular Http Verb. If the patttern starts with `/`, it will ignore all the prefixes and will be used as the de-facto route for that method.
+The value of `Patttern` property is used to generate the route of that method for a particular HTTP Verb. If the patttern starts with `/`, it will ignore all the prefixes and will be used as the de-facto route for that method.
 
 # Example usage
 
-Using the .Net Core Generic Host configure Orleans the same way you would and add the AspNet Core 3.0 to it:
+Using the .Net Core Generic Host configure Orleans the same way you would and add the ASP.NET Core to it:
 
 ```csharp
     var hostBuilder = new HostBuilder();
@@ -170,7 +170,7 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        // Enable AspNet Core Endpoint Routing
+        // Enable ASP.NET Core Endpoint Routing
         app.UseRouting();
 
         // Enable Authentication
@@ -179,13 +179,13 @@ public class Startup
         // Enable Authorization
         app.UseAuthorization();
 
-        // Configure AspNet Core endpoints
+        // Configure ASP.NET Core endpoints
         app.UseEndpoints(endpoints =>
         {
             // Call MapGrains([prefix]) with an optional prefix for the routes.
             endpoints.MapGrains("grains");
 
-            // You can add any other endpoints here like regular AspNet Controller, SignalR, you name it. 
+            // You can add any other endpoints here like regular ASP.NET Controller, SignalR, you name it. 
             // Orleans endpoints are agnostic to other routes.
         });
     }
