@@ -24,7 +24,7 @@ jobs:
     - name: Test
       run: dotnet test --configuration Release --no-build
     - name: Pack
-      run: dotnet pack --configuration Release --no-build --output packages /p:Version=1.0.0
+      run: dotnet pack --configuration Release --no-build --output packages /p:Version=1.0.0-preview1
       if: github.ref == 'release'
     - name: Push
       run: dotnet nuget push packages/ --api-key ${{ secrets.NUGET_KEY }}
