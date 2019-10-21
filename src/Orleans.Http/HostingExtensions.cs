@@ -37,9 +37,16 @@ namespace Orleans.Http
         public static IServiceCollection AddJsonMediaType(this IServiceCollection services, Action<JsonSerializerOptions> configure = null)
         {
             var options = new JsonSerializerOptions();
-            options.PropertyNameCaseInsensitive = true;
-            options.AllowTrailingCommas = true;
-            configure?.Invoke(options);
+            if (configure == null)
+            {
+                options.PropertyNameCaseInsensitive = true;
+                options.AllowTrailingCommas = true;
+            }
+            else
+            {
+                configure.Invoke(options);
+            }
+
             return services
                 .AddSingleton<IMediaTypeHandler, JsonMediaTypeHandler>(sp => new JsonMediaTypeHandler(options));
         }
@@ -48,6 +55,12 @@ namespace Orleans.Http
         {
             return services
                 .AddSingleton<IMediaTypeHandler, XMLMediaTypeHandler>();
+        }
+
+        public static IServiceCollection AddFormsMediaType(this IServiceCollection services)
+        {
+            return services
+                .AddSingleton<IMediaTypeHandler, FormsMediaTypeHandler>();
         }
 
         public static IEndpointRouteBuilder MapGrains(this IEndpointRouteBuilder routes, string prefix = "")
