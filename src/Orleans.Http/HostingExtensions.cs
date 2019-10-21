@@ -44,6 +44,12 @@ namespace Orleans.Http
                 .AddSingleton<IMediaTypeHandler, JsonMediaTypeHandler>(sp => new JsonMediaTypeHandler(options));
         }
 
+        public static IServiceCollection AddXmlMediaType(this IServiceCollection services)
+        {
+            return services
+                .AddSingleton<IMediaTypeHandler, XMLMediaTypeHandler>();
+        }
+
         public static IEndpointRouteBuilder MapGrains(this IEndpointRouteBuilder routes, string prefix = "")
         {
             // Normalize Prefix
