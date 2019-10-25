@@ -5,7 +5,7 @@
   <h1>Orleans HTTP Endpoints</h1>
 </p>
 
-[![Build](https://github.com/OrleansContrib/Orleans.Http/workflows/CI/badge.svg)](https://github.com/OrleansContrib/Orleans.Http/workflows/CI/)
+[![Build](https://github.com/OrleansContrib/Orleans.Http/workflows/CI/badge.svg)](https://github.com/OrleansContrib/Orleans.Http/actions)
 [![NuGet](https://img.shields.io/nuget/v/Orleans.Http.svg?style=flat)](http://www.nuget.org/packages/Orleans.Http)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/dotnet/orleans?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
