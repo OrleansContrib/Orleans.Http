@@ -23,7 +23,9 @@ jobs:
     - name: Test
       run: dotnet test --configuration Release --no-build
     - name: Pack
-      run: dotnet pack --configuration Release --output packages /p:Version=1.0.0
+      run: dotnet pack --configuration Release --output packages /p:Version=1.1.0
     - name: Push
       run: |
-        dotnet nuget push packages/*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+        dotnet nuget push packages/Orleans.Http.Abstractions.1.1.0.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+        dotnet nuget push packages/Orleans.Http.1.1.0.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+        dotnet nuget push packages/Orleans.Http.MediaTypes.Protobuf.1.1.0.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
