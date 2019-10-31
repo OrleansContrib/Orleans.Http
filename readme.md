@@ -5,8 +5,9 @@
   <h1>Orleans HTTP Endpoints</h1>
 </p>
 
-[![Build](https://github.com/OrleansContrib/Orleans.Http/workflows/CI/badge.svg)](https://github.com/OrleansContrib/Orleans.Http/workflows/CI/)
-[![NuGet](https://img.shields.io/nuget/v/Orleans.Http.svg?style=flat)](http://www.nuget.org/packages/Orleans.Http)
+[![Build](https://github.com/OrleansContrib/Orleans.Http/workflows/CI/badge.svg)](https://github.com/OrleansContrib/Orleans.Http/actions)
+[![Package Version](https://img.shields.io/nuget/v/Orleans.Http.svg)](https://www.nuget.org/packages/Orleans.Http)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/Orleans.Http.svg)](https://www.nuget.org/packages/Orleans.Http)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/dotnet/orleans?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 [Orleans](https://github.com/dotnet/orleans) is a framework that provides a straight-forward approach to building distributed high-scale computing applications, without the need to learn and apply complex concurrency or other scaling patterns. 

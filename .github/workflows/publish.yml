@@ -2,8 +2,8 @@ name: Publish
 
 on:
   push:
-    branches:
-      - release
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
   build:
@@ -12,8 +12,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-      with:
-        ref: 'release'
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -23,7 +21,10 @@ jobs:
     - name: Test
       run: dotnet test --configuration Release --no-build
     - name: Pack
-      run: dotnet pack --configuration Release --output packages /p:Version=1.0.0
+      run: dotnet pack --configuration Release --output packages
     - name: Push
+      working-directory: packages
       run: |
-        dotnet nuget push packages/*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+        dotnet nuget push Orleans.Http.Abstractions.*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+        dotnet nuget push Orleans.Http.*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+        dotnet nuget push Orleans.Http.MediaTypes.Protobuf.*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
