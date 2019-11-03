@@ -21,7 +21,7 @@ jobs:
     - name: Test
       run: dotnet test --configuration Release --no-build
     - name: Pack
-      run: dotnet pack --configuration Release --output packages
+      run: dotnet pack --configuration Release --output packages -p:Version=${GITHUB_REF##*/v}
     - name: Push
       working-directory: packages
       run: |
