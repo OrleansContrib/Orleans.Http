@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Orleans.Concurrency;
 using Orleans.Http.Abstractions;
 using ProtoBuf;
+using Orleans;
+using System.Collections.Generic;
 
 namespace Orleans.Http.Test
 {
@@ -57,6 +59,9 @@ namespace Orleans.Http.Test
         [Authorize(Roles = "admin")]
         [HttpGet]
         Task<AuthResponse> GetWithAuthAdmin();
+
+        [HttpGet("{grainId}/GetCustom")]
+        Task<IGrainHttpResult<TestPayload>> GetCustomStatus();
     }
 
     [ProtoContract]
@@ -128,6 +133,20 @@ namespace Orleans.Http.Test
                 User = this._httpConntextAcessor.HttpContext.User.FindFirst(ClaimTypes.Name).Value,
                 Role = this._httpConntextAcessor.HttpContext.User.FindFirst(ClaimTypes.Role).Value
             });
+        }
+
+        public Task<IGrainHttpResult<TestPayload>> GetCustomStatus()
+        {
+            return Task.FromResult(
+                this.Created(
+                    new TestPayload
+                    {
+                        Number = 1,
+                        Text = "IGrainHttpResult"
+                    },
+                    new Dictionary<string, string> { { "CustomHeader", "HeaderValue" } }
+                )
+            );
         }
 
         public Task<AuthResponse> GetWithAuthAdmin()
