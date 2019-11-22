@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Orleans.Http.Abstractions;
-using Orleans.Runtime;
 
 namespace Orleans.Http
 {
@@ -22,7 +20,6 @@ namespace Orleans.Http
         private static readonly MethodInfo _getResultMethod = typeof(GrainInvoker).GetMethod(nameof(GetResult), BindingFlags.Static | BindingFlags.NonPublic);
         private static readonly Type _taskOfTType = typeof(Task<>);
         private static readonly Type _grainHttpResultType = typeof(IGrainHttpResult);
-        private static readonly Type _grainHttpResultOfTType = typeof(IGrainHttpResult<>);
         private readonly Dictionary<string, Parameter> _parameters = new Dictionary<string, Parameter>(StringComparer.OrdinalIgnoreCase);
         private readonly MethodInfo _methodInfo;
         private readonly ILogger _logger;
@@ -79,7 +76,7 @@ namespace Orleans.Http
                         var serialized = await this._mediaTypeManager.Serialize(contentType, httpResult.Body, context.Response.BodyWriter);
                         if (!serialized)
                         {
-                            await context.Response.WriteAsync(result.ToString());
+                            await context.Response.WriteAsync(httpResult.Body.ToString());
                         }
                     }
                     else

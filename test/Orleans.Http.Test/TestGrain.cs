@@ -1,12 +1,10 @@
 using System;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Orleans.Concurrency;
 using Orleans.Http.Abstractions;
 using ProtoBuf;
-using Orleans;
 using System.Collections.Generic;
 
 namespace Orleans.Http.Test
@@ -62,6 +60,16 @@ namespace Orleans.Http.Test
 
         [HttpGet("{grainId}/GetCustom")]
         Task<IGrainHttpResult<TestPayload>> GetCustomStatus();
+
+        [HttpGet("{grainId}/SameUrl")]
+        Task SameUrlGet();
+
+        [HttpPost("{grainId}/SameUrl")]
+        Task SameUrlPost();
+
+        [HttpGet("{grainId}/SameUrlAndMethod")]
+        [HttpPost("{grainId}/SameUrlAndMethod")]
+        Task SameUrlAndMethod();
     }
 
     [ProtoContract]
@@ -157,5 +165,11 @@ namespace Orleans.Http.Test
                 Role = this._httpConntextAcessor.HttpContext.User.FindFirst(ClaimTypes.Role).Value
             });
         }
+
+        public Task SameUrlGet() => Task.CompletedTask;
+
+        public Task SameUrlPost() => Task.CompletedTask;
+
+        public Task SameUrlAndMethod() => Task.CompletedTask;
     }
 }

@@ -72,6 +72,22 @@ namespace Orleans.Http.Test
             Assert.NotNull(payload);
             Assert.True(payload.Number == 1);
             Assert.True(payload.Text == nameof(IGrainHttpResult));
+
+            url = "/grains/test/00000000-0000-0000-0000-000000000000/SameUrl";
+            response = await this._http.GetHttpMessage(TestExtensions.JSON, url);
+            Assert.True(response.StatusCode == HttpStatusCode.OK);
+
+            url = "/grains/test/00000000-0000-0000-0000-000000000000/SameUrl";
+            response = await this._http.PostAsync(url, new StringContent(""));
+            Assert.True(response.StatusCode == HttpStatusCode.OK);
+
+            url = "/grains/test/00000000-0000-0000-0000-000000000000/SameUrlAndMethod";
+            response = await this._http.GetHttpMessage(TestExtensions.JSON, url);
+            Assert.True(response.StatusCode == HttpStatusCode.OK);
+
+            url = "/grains/test/00000000-0000-0000-0000-000000000000/SameUrlAndMethod";
+            response = await this._http.PostAsync(url, new StringContent(""));
+            Assert.True(response.StatusCode == HttpStatusCode.OK);
         }
 
         [Fact]
