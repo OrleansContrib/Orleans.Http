@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO.Pipelines;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
@@ -31,6 +32,14 @@ namespace Orleans.Http
             return model;
         }
 
-        public ValueTask Serialize(object obj, PipeWriter writer) => throw new NotSupportedException();
+        public async ValueTask Serialize(object obj, PipeWriter writer)
+        {
+            if (obj.GetType() != _dicType) return;
+
+            var content = new FormUrlEncodedContent((Dictionary<string, string>)obj);
+
+            // We should find a way to avoid this copy
+            await writer.WriteAsync((await content.ReadAsByteArrayAsync()).AsMemory());
+        }
     }
 }

@@ -73,10 +73,14 @@ namespace Orleans.Http
                                 context.Response.Headers[header.Key] = header.Value;
                             }
                         }
-                        var serialized = await this._mediaTypeManager.Serialize(contentType, httpResult.Body, context.Response.BodyWriter);
-                        if (!serialized)
+
+                        if (httpResult.Body != null)
                         {
-                            await context.Response.WriteAsync(httpResult.Body.ToString());
+                            var serialized = await this._mediaTypeManager.Serialize(contentType, httpResult.Body, context.Response.BodyWriter);
+                            if (!serialized)
+                            {
+                                await context.Response.WriteAsync(httpResult.Body.ToString());
+                            }
                         }
                     }
                     else
