@@ -1,5 +1,6 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
@@ -62,6 +63,31 @@ namespace Orleans.Http.Test
             url = "/grains/test/Orleans.Http.Test.ITestGrain/00000000-0000-0000-0000-000000000000/post";
             response = await this._http.GetHttpMessage(TestExtensions.JSON, url);
             Assert.True(response.StatusCode == HttpStatusCode.MethodNotAllowed);
+
+            url = "/grains/test/00000000-0000-0000-0000-000000000000/GetCustom";
+            response = await this._http.GetHttpMessage(TestExtensions.JSON, url);
+            Assert.True(response.StatusCode == HttpStatusCode.Created);
+            Assert.True(response.Headers.GetValues("CustomHeader").First() == "HeaderValue");
+            var payload = JsonSerializer.Deserialize<TestPayload>(await response.Content.ReadAsStringAsync());
+            Assert.NotNull(payload);
+            Assert.True(payload.Number == 1);
+            Assert.True(payload.Text == nameof(IGrainHttpResult));
+
+            url = "/grains/test/00000000-0000-0000-0000-000000000000/SameUrl";
+            response = await this._http.GetHttpMessage(TestExtensions.JSON, url);
+            Assert.True(response.StatusCode == HttpStatusCode.OK);
+
+            url = "/grains/test/00000000-0000-0000-0000-000000000000/SameUrl";
+            response = await this._http.PostAsync(url, new StringContent(""));
+            Assert.True(response.StatusCode == HttpStatusCode.OK);
+
+            url = "/grains/test/00000000-0000-0000-0000-000000000000/SameUrlAndMethod";
+            response = await this._http.GetHttpMessage(TestExtensions.JSON, url);
+            Assert.True(response.StatusCode == HttpStatusCode.OK);
+
+            url = "/grains/test/00000000-0000-0000-0000-000000000000/SameUrlAndMethod";
+            response = await this._http.PostAsync(url, new StringContent(""));
+            Assert.True(response.StatusCode == HttpStatusCode.OK);
         }
 
         [Fact]
