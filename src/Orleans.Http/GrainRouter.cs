@@ -16,7 +16,7 @@ namespace Orleans.Http
         private IServiceProvider _serviceProvider;
         private readonly IClusterClient _clusterClient;
         private readonly ILogger _logger;
-        private readonly Dictionary<string, GrainInvoker> _routes = new Dictionary<string, GrainInvoker>(StringComparer.InvariantCultureIgnoreCase);
+        private readonly Dictionary<string, Dictionary<string, GrainInvoker>> _routes = new Dictionary<string, Dictionary<string, GrainInvoker>>(StringComparer.InvariantCultureIgnoreCase);
 
         public GrainRouter(IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
         {
@@ -25,12 +25,23 @@ namespace Orleans.Http
             this._logger = loggerFactory.CreateLogger<GrainRouter>();
         }
 
-        public bool RegisterRoute(string pattern, MethodInfo method)
+        public bool RegisterRoute(string pattern, string httpMethod, MethodInfo method)
         {
-            if (this._routes.ContainsKey(pattern)) return false;
             var grainInterfaceType = method.DeclaringType;
             var grainIdType = this.GetGrainIdType(grainInterfaceType);
-            this._routes[pattern] = new GrainInvoker(this._serviceProvider, grainIdType, method);
+
+            if (this._routes.TryGetValue(pattern, out var grainRoutes))
+            {
+                if (grainRoutes.ContainsKey(httpMethod)) return false;
+
+                grainRoutes[httpMethod] = new GrainInvoker(this._serviceProvider, grainIdType, method);
+            }
+            else
+            {
+                this._routes[pattern] = new Dictionary<string, GrainInvoker>(StringComparer.InvariantCultureIgnoreCase);
+                this._routes[pattern][httpMethod] = new GrainInvoker(this._serviceProvider, grainIdType, method);
+            }
+
             return true;
         }
 
@@ -38,8 +49,14 @@ namespace Orleans.Http
         {
             var endpoint = (RouteEndpoint)context.GetEndpoint();
             var pattern = endpoint.RoutePattern;
-            // At this point we are sure we have a patter and an invoker since a route was match for that particular endpoint
-            var invoker = this._routes[pattern.RawText];
+            // At this point we are sure we have a pattern and an invoker since a route was match for that particular endpoint
+            var allRoutes = this._routes[pattern.RawText];
+            GrainInvoker invoker = default;
+
+            if (!allRoutes.TryGetValue("*", out invoker))
+            {
+                invoker = allRoutes[context.Request.Method];
+            }
 
             IGrain grain = this.GetGrain(pattern, invoker.GrainType, invoker.GrainIdType, context);
 

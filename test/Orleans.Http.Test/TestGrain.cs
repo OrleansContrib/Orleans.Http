@@ -1,11 +1,11 @@
 using System;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Orleans.Concurrency;
 using Orleans.Http.Abstractions;
 using ProtoBuf;
+using System.Collections.Generic;
 
 namespace Orleans.Http.Test
 {
@@ -57,6 +57,19 @@ namespace Orleans.Http.Test
         [Authorize(Roles = "admin")]
         [HttpGet]
         Task<AuthResponse> GetWithAuthAdmin();
+
+        [HttpGet("{grainId}/GetCustom")]
+        Task<IGrainHttpResult<TestPayload>> GetCustomStatus();
+
+        [HttpGet("{grainId}/SameUrl")]
+        Task SameUrlGet();
+
+        [HttpPost("{grainId}/SameUrl")]
+        Task SameUrlPost();
+
+        [HttpGet("{grainId}/SameUrlAndMethod")]
+        [HttpPost("{grainId}/SameUrlAndMethod")]
+        Task SameUrlAndMethod();
     }
 
     [ProtoContract]
@@ -130,6 +143,20 @@ namespace Orleans.Http.Test
             });
         }
 
+        public Task<IGrainHttpResult<TestPayload>> GetCustomStatus()
+        {
+            return Task.FromResult(
+                this.Created(
+                    new TestPayload
+                    {
+                        Number = 1,
+                        Text = "IGrainHttpResult"
+                    },
+                    new Dictionary<string, string> { { "CustomHeader", "HeaderValue" } }
+                )
+            );
+        }
+
         public Task<AuthResponse> GetWithAuthAdmin()
         {
             return Task.FromResult(new AuthResponse
@@ -138,5 +165,11 @@ namespace Orleans.Http.Test
                 Role = this._httpConntextAcessor.HttpContext.User.FindFirst(ClaimTypes.Role).Value
             });
         }
+
+        public Task SameUrlGet() => Task.CompletedTask;
+
+        public Task SameUrlPost() => Task.CompletedTask;
+
+        public Task SameUrlAndMethod() => Task.CompletedTask;
     }
 }

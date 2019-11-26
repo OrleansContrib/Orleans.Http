@@ -18,11 +18,14 @@ namespace Orleans.Http
             typeof(FromQueryAttribute)
         };
         private static readonly MethodInfo _getResultMethod = typeof(GrainInvoker).GetMethod(nameof(GetResult), BindingFlags.Static | BindingFlags.NonPublic);
+        private static readonly Type _taskOfTType = typeof(Task<>);
+        private static readonly Type _grainHttpResultType = typeof(IGrainHttpResult);
         private readonly Dictionary<string, Parameter> _parameters = new Dictionary<string, Parameter>(StringComparer.OrdinalIgnoreCase);
         private readonly MethodInfo _methodInfo;
         private readonly ILogger _logger;
         private readonly MediaTypeManager _mediaTypeManager;
         private MethodInfo _getResult;
+        private bool _isIGrainHttpResultType;
         public Type GrainType => this._methodInfo.DeclaringType;
         public GrainIdType GrainIdType { get; private set; }
 
@@ -45,6 +48,7 @@ namespace Orleans.Http
             if (this._getResult != null)
             {
                 object result = this._getResult.Invoke(null, new[] { grainCall });
+
                 if (result != null)
                 {
                     string contentType = string.Empty;
@@ -58,10 +62,34 @@ namespace Orleans.Http
                     }
                     context.Response.ContentType = contentType;
 
-                    var serialized = await this._mediaTypeManager.Serialize(contentType, result, context.Response.BodyWriter);
-                    if (!serialized)
+                    if (this._isIGrainHttpResultType)
                     {
-                        await context.Response.WriteAsync(result.ToString());
+                        var httpResult = (IGrainHttpResult)result;
+                        context.Response.StatusCode = (int)httpResult.StatusCode;
+                        if (httpResult.ResponseHeaders?.Count > 0)
+                        {
+                            foreach (var header in httpResult.ResponseHeaders)
+                            {
+                                context.Response.Headers[header.Key] = header.Value;
+                            }
+                        }
+
+                        if (httpResult.Body != null)
+                        {
+                            var serialized = await this._mediaTypeManager.Serialize(contentType, httpResult.Body, context.Response.BodyWriter);
+                            if (!serialized)
+                            {
+                                await context.Response.WriteAsync(httpResult.Body.ToString());
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var serialized = await this._mediaTypeManager.Serialize(contentType, result, context.Response.BodyWriter);
+                        if (!serialized)
+                        {
+                            await context.Response.WriteAsync(result.ToString());
+                        }
                     }
                 }
             }
@@ -213,9 +241,14 @@ namespace Orleans.Http
         private void BuildResultDelegate()
         {
             if (this._methodInfo.ReturnType.IsGenericType &&
-                            this._methodInfo.ReturnType.GetGenericTypeDefinition() == typeof(Task<>))
+                this._methodInfo.ReturnType.GetGenericTypeDefinition() == _taskOfTType)
             {
-                this._getResult = _getResultMethod.MakeGenericMethod(this._methodInfo.ReturnType.GenericTypeArguments[0]);
+                var returnType = this._methodInfo.ReturnType.GenericTypeArguments[0];
+                if (returnType == _grainHttpResultType || returnType.GetInterfaces().Any(i => i == _grainHttpResultType))
+                {
+                    this._isIGrainHttpResultType = true;
+                }
+                this._getResult = _getResultMethod.MakeGenericMethod(returnType);
             }
         }
 
