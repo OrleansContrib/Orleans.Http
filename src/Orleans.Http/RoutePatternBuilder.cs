@@ -34,8 +34,8 @@ namespace Orleans.Http
 
         private static bool ValidatePattern(string pattern)
         {
-            // When more elaborated routes are supported, we will have more rules here
-            return pattern.Contains(GRAIN_ID_TOKEN);
+            // No rules to currently enforce
+            return true;
         }
     }
 }

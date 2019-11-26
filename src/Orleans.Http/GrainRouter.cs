@@ -1,51 +1,42 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Routing.Patterns;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Orleans.Http
 {
     internal class GrainRouter
     {
-        private IServiceProvider _serviceProvider;
-        private readonly IClusterClient _clusterClient;
-        private readonly ILogger _logger;
+        private readonly IServiceProvider _serviceProvider;
         private readonly Dictionary<string, Dictionary<string, GrainInvoker>> _routes = new Dictionary<string, Dictionary<string, GrainInvoker>>(StringComparer.InvariantCultureIgnoreCase);
 
-        public GrainRouter(IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
+        public GrainRouter(IServiceProvider serviceProvider)
         {
             this._serviceProvider = serviceProvider;
-            this._clusterClient = serviceProvider.GetRequiredService<IClusterClient>();
-            this._logger = loggerFactory.CreateLogger<GrainRouter>();
         }
 
-        public bool RegisterRoute(string pattern, string httpMethod, MethodInfo method)
+        public bool RegisterRoute(string pattern, string httpMethod, MethodInfo method, Type routeGrainProviderType)
         {
-            var grainInterfaceType = method.DeclaringType;
-            var grainIdType = this.GetGrainIdType(grainInterfaceType);
-
             if (this._routes.TryGetValue(pattern, out var grainRoutes))
             {
                 if (grainRoutes.ContainsKey(httpMethod)) return false;
 
-                grainRoutes[httpMethod] = new GrainInvoker(this._serviceProvider, grainIdType, method);
+                grainRoutes[httpMethod] = new GrainInvoker(this._serviceProvider, method, routeGrainProviderType);
             }
             else
             {
-                this._routes[pattern] = new Dictionary<string, GrainInvoker>(StringComparer.InvariantCultureIgnoreCase);
-                this._routes[pattern][httpMethod] = new GrainInvoker(this._serviceProvider, grainIdType, method);
+                this._routes[pattern] = new Dictionary<string, GrainInvoker>(StringComparer.InvariantCultureIgnoreCase)
+                {
+                    [httpMethod] = new GrainInvoker(this._serviceProvider, method, routeGrainProviderType)
+                };
             }
 
             return true;
         }
 
-        public Task Dispatch(HttpContext context)
+        public async Task Dispatch(HttpContext context)
         {
             var endpoint = (RouteEndpoint)context.GetEndpoint();
             var pattern = endpoint.RoutePattern;
@@ -58,79 +49,16 @@ namespace Orleans.Http
                 invoker = allRoutes[context.Request.Method];
             }
 
-            IGrain grain = this.GetGrain(pattern, invoker.GrainType, invoker.GrainIdType, context);
+            IGrain grain = await invoker.RouteGrainProvider.GetGrain(invoker.GrainType);
 
             if (grain == null)
             {
                 // We only faw here if the grainId is mal formed
-                context.Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest;
-                return Task.CompletedTask;
+                //context.Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest;
+                return;
             }
 
-            return invoker.Invoke(grain, context);
+            await invoker.Invoke(grain, context);
         }
-
-        private IGrain GetGrain(RoutePattern pattern, Type grainType, GrainIdType grainIdType, HttpContext context)
-        {
-            try
-            {
-                var grainIdParameter = context.Request.RouteValues[Constants.GRAIN_ID];
-                var grainIdExtensionParameter = context.Request.RouteValues.ContainsKey(Constants.GRAIN_ID_EXTENSION) ? context.Request.RouteValues[Constants.GRAIN_ID] : null;
-                switch (grainIdType)
-                {
-                    case GrainIdType.String:
-                        string stringId = (string)grainIdParameter;
-                        return this._clusterClient.GetGrain(grainType, stringId);
-                    case GrainIdType.Integer:
-                        long integerId = Convert.ToInt64(grainIdParameter);
-                        return this._clusterClient.GetGrain(grainType, integerId);
-                    case GrainIdType.IntegerCompound:
-                        return this._clusterClient.GetGrain(grainType, Convert.ToInt64(grainIdParameter), (string)grainIdExtensionParameter);
-                    case GrainIdType.GuidCompound:
-                        return this._clusterClient.GetGrain(grainType, Guid.Parse((string)grainIdParameter), (string)grainIdExtensionParameter);
-                    default:
-                        return this._clusterClient.GetGrain(grainType, Guid.Parse((string)grainIdParameter));
-                }
-            }
-            catch (Exception exc)
-            {
-                this._logger.LogError(exc, $"Failure getting grain '{grainType.FullName} | {grainIdType}' for route '{pattern.RawText}': {exc.Message}");
-                return null;
-            }
-        }
-
-        private GrainIdType GetGrainIdType(Type grainInterfaceType)
-        {
-            var ifaces = grainInterfaceType.GetInterfaces();
-            if (ifaces.Contains(typeof(IGrainWithGuidKey)))
-            {
-                return GrainIdType.Guid;
-            }
-            else if (ifaces.Contains(typeof(IGrainWithGuidCompoundKey)))
-            {
-                return GrainIdType.GuidCompound;
-            }
-            else if (ifaces.Contains(typeof(IGrainWithIntegerKey)))
-            {
-                return GrainIdType.Integer;
-            }
-            else if (ifaces.Contains(typeof(IGrainWithIntegerCompoundKey)))
-            {
-                return GrainIdType.IntegerCompound;
-            }
-            else
-            {
-                return GrainIdType.String;
-            }
-        }
-    }
-
-    internal enum GrainIdType
-    {
-        Guid = 0,
-        String = 1,
-        Integer = 2,
-        GuidCompound = 3,
-        IntegerCompound = 4
     }
 }

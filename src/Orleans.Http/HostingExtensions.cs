@@ -136,16 +136,19 @@ namespace Orleans.Http
                     Func<RoutePattern, RequestDelegate, IEndpointConventionBuilder> mapFunc = default;
                     var httpMethod = string.Empty;
                     RoutePattern routePattern = default;
+                    Type routeGrainProviderType = null;
 
                     if (attribute is RouteAttribute routeAttr)
                     {
                         routePattern = RoutePatternBuilder.BuildRoutePattern(prefix, topLevelPattern, grainType.FullName, method.Name, routeAttr.Pattern);
+                        routeGrainProviderType = routeAttr.RouteGrainProvider;
                         httpMethod = "*";
                         mapFunc = routes.Map;
                     }
                     else if (attribute is MethodAttribute methodAttr)
                     {
                         routePattern = RoutePatternBuilder.BuildRoutePattern(prefix, topLevelPattern, grainType.FullName, method.Name, methodAttr.Pattern);
+                        routeGrainProviderType = methodAttr.RouteGrainProvider;
 
                         Func<string, RequestDelegate, IEndpointConventionBuilder> methodMapFunc = default;
 
@@ -178,7 +181,7 @@ namespace Orleans.Http
                         continue;
                     }
 
-                    if (!dispatcher.RegisterRoute(routePattern.RawText, httpMethod, method))
+                    if (!dispatcher.RegisterRoute(routePattern.RawText, httpMethod, method, routeGrainProviderType))
                     {
                         throw new InvalidOperationException($"Dupplicated route pattern '{routePattern.RawText}'. A route with this pattern already exist.");
                     }

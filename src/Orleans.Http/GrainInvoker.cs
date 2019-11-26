@@ -27,14 +27,23 @@ namespace Orleans.Http
         private MethodInfo _getResult;
         private bool _isIGrainHttpResultType;
         public Type GrainType => this._methodInfo.DeclaringType;
-        public GrainIdType GrainIdType { get; private set; }
+        public IRouteGrainProvider RouteGrainProvider { get; }
 
-        public GrainInvoker(IServiceProvider serviceProvider, GrainIdType grainIdType, MethodInfo methodInfo)
+        public GrainInvoker(IServiceProvider serviceProvider, MethodInfo methodInfo, Type routeGrainProviderType)
         {
-            this.GrainIdType = grainIdType;
             this._logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<GrainInvoker>();
             this._methodInfo = methodInfo;
             this._mediaTypeManager = serviceProvider.GetRequiredService<MediaTypeManager>();
+
+            if (routeGrainProviderType != null)
+            {
+                this.RouteGrainProvider = (IRouteGrainProvider)ActivatorUtilities.GetServiceOrCreateInstance(serviceProvider, routeGrainProviderType);
+            }
+            else
+            {
+                //If it is null that means it is not set from the initial attribute - so we default to trying to get the grain id from the route itself
+                this.RouteGrainProvider = ActivatorUtilities.GetServiceOrCreateInstance<GrainIdFromRouteGrainProvider>(serviceProvider);
+            }
 
             this.BuildResultDelegate();
             this.BuildParameterMap();
