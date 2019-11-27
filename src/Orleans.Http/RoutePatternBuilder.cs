@@ -16,8 +16,6 @@ namespace Orleans.Http
             // If the user defined a pattern then lets use it
             if (!string.IsNullOrWhiteSpace(routeAttributePattern))
             {
-                if (!ValidatePattern(routeAttributePattern)) return null;
-
                 if (routeAttributePattern.StartsWith("/"))
                 {
                     return RoutePatternFactory.Parse(routeAttributePattern);
@@ -30,12 +28,6 @@ namespace Orleans.Http
 
             // Otherwise lets use the default one
             return RoutePatternFactory.Parse($"{prefix}{topLevelPattern}{grainTypeName}/{{grainId}}/{methodName}");
-        }
-
-        private static bool ValidatePattern(string pattern)
-        {
-            // No rules to currently enforce
-            return true;
         }
     }
 }
