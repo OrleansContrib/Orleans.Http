@@ -88,6 +88,10 @@ namespace Orleans.Http.Test
             url = "/grains/test/00000000-0000-0000-0000-000000000000/SameUrlAndMethod";
             response = await this._http.PostAsync(url, new StringContent(""));
             Assert.True(response.StatusCode == HttpStatusCode.OK);
+
+            url = "/grains/test/get";
+            response = await this._http.GetHttpMessage(TestExtensions.JSON, url);
+            Assert.True(response.StatusCode == HttpStatusCode.OK);
         }
 
         [Fact]
