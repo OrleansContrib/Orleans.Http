@@ -85,7 +85,9 @@ The `Pattern` property of the attributes define the route to be used. If the `Pa
 
 `{optionalPrefix}/{optionalTopLevelPattern}/{grainTypeName}/{grainId}/{methodName}`
 
-If an attribute `Pattern` property is set, it is required to somewhere into the pattern to add the `{grainId}` string otherwise the route will fail to be registered. Optionally, you can also add `{grainIdExtension}` in case of grains that have Compound keys.
+If an attribute `Pattern` property is set and the `routeGrainProvider` property is not set, it is required to somewhere into the pattern to add the `{grainId}` string otherwise the route will fail to be registered. Optionally, you can also add `{grainIdExtension}` in case of grains that have Compound keys. 
+
+When the `routeGrainProvider` is set, the type is it set to must implement `IRouteGrainProvider`. The implemented type can utilize dependency injection and must return an IGrain instance that the request will be routed to, or return a null instance. It is recommended to set the response status code to an appropriate response code when returning a null instance, otherwise it will respond with a 500 internal server error.
 
 The following attributes are under the `Orleans.Http.Abstractions` package:
 
