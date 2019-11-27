@@ -89,9 +89,13 @@ namespace Orleans.Http.Test
             response = await this._http.PostAsync(url, new StringContent(""));
             Assert.True(response.StatusCode == HttpStatusCode.OK);
 
-            url = "/grains/test/get";
+            url = "/grains/test/get6";
             response = await this._http.GetHttpMessage(TestExtensions.JSON, url);
             Assert.True(response.StatusCode == HttpStatusCode.OK);
+
+            url = "/grains/test/get7";
+            response = await this._http.GetHttpMessage(TestExtensions.JSON, url);
+            Assert.True(response.StatusCode == HttpStatusCode.InternalServerError);
         }
 
         [Fact]

@@ -71,8 +71,11 @@ namespace Orleans.Http.Test
         [HttpPost("{grainId}/SameUrlAndMethod")]
         Task SameUrlAndMethod();
 
-        [HttpGet(pattern: "Get", routeGrainProvider: typeof(RandomGuidRouteGrainProvider))]
-        Task Get5();
+        [HttpGet(pattern: "Get6", routeGrainProvider: typeof(RandomGuidRouteGrainProvider))]
+        Task Get6();
+
+        [HttpGet(pattern: "Get7", routeGrainProvider: typeof(FailingRouteGrainProvider))]
+        Task Get7();
     }
 
     [ProtoContract]
@@ -175,7 +178,9 @@ namespace Orleans.Http.Test
 
         public Task SameUrlAndMethod() => Task.CompletedTask;
 
-        public Task Get5() => Task.CompletedTask;
+        public Task Get6() => Task.CompletedTask;
+
+        public Task Get7() => Task.CompletedTask;
     }
 
     public class RandomGuidRouteGrainProvider : IRouteGrainProvider
@@ -190,6 +195,14 @@ namespace Orleans.Http.Test
         public Task<IGrain> GetGrain(Type grainType)
         {
             return Task.FromResult(_cluserClient.GetGrain(grainType, Guid.NewGuid()));
+        }
+    }
+
+    public class FailingRouteGrainProvider : IRouteGrainProvider
+    {
+        public Task<IGrain> GetGrain(Type grainType)
+        {
+            return Task.FromResult<IGrain>(null);
         }
     }
 }

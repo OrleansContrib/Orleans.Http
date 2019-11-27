@@ -4,17 +4,20 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Logging;
 
 namespace Orleans.Http
 {
     internal class GrainRouter
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger _logger;
         private readonly Dictionary<string, Dictionary<string, GrainInvoker>> _routes = new Dictionary<string, Dictionary<string, GrainInvoker>>(StringComparer.InvariantCultureIgnoreCase);
 
-        public GrainRouter(IServiceProvider serviceProvider)
+        public GrainRouter(IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
         {
             this._serviceProvider = serviceProvider;
+            this._logger = loggerFactory.CreateLogger<GrainRouter>();
         }
 
         public bool RegisterRoute(string pattern, string httpMethod, MethodInfo method, Type routeGrainProviderType)
@@ -53,8 +56,12 @@ namespace Orleans.Http
 
             if (grain == null)
             {
-                // We only faw here if the grainId is mal formed
-                //context.Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest;
+                //Check if status is set to OK and change to internal server error, the invoker's RouteGrainProvider implementation may handle this otherwise
+                if (context.Response.StatusCode == (int)System.Net.HttpStatusCode.OK)
+                {
+                    this._logger.LogError($"Failure getting grain '{invoker.GrainType.FullName}' for route '{pattern.RawText}' with RouteGrainProvider '{invoker.RouteGrainProvider.GetType()}' and was unhandled");
+                    context.Response.StatusCode = (int)System.Net.HttpStatusCode.InternalServerError;
+                }
                 return;
             }
 

@@ -38,24 +38,30 @@ namespace Orleans.Http
 
             try
             {
-                var grainIdType = this.GetGrainIdType(grainType);
-                var grainIdParameter = context.Request.RouteValues[Constants.GRAIN_ID];
-                var grainIdExtensionParameter = context.Request.RouteValues.ContainsKey(Constants.GRAIN_ID_EXTENSION) ? context.Request.RouteValues[Constants.GRAIN_ID] : null;
-                switch (grainIdType)
+                if (context.Request.RouteValues.ContainsKey(Constants.GRAIN_ID))
                 {
-                    case GrainIdType.String:
-                        string stringId = (string)grainIdParameter;
-                        return Task.FromResult(this._clusterClient.GetGrain(grainType, stringId));
-                    case GrainIdType.Integer:
-                        long integerId = Convert.ToInt64(grainIdParameter);
-                        return Task.FromResult(this._clusterClient.GetGrain(grainType, integerId));
-                    case GrainIdType.IntegerCompound:
-                        return Task.FromResult(this._clusterClient.GetGrain(grainType, Convert.ToInt64(grainIdParameter), (string)grainIdExtensionParameter));
-                    case GrainIdType.GuidCompound:
-                        return Task.FromResult(this._clusterClient.GetGrain(grainType, Guid.Parse((string)grainIdParameter), (string)grainIdExtensionParameter));
-                    default:
-                        return Task.FromResult(this._clusterClient.GetGrain(grainType, Guid.Parse((string)grainIdParameter)));
+                    var grainIdType = this.GetGrainIdType(grainType);
+                    var grainIdParameter = context.Request.RouteValues[Constants.GRAIN_ID];
+                    var grainIdExtensionParameter = context.Request.RouteValues.ContainsKey(Constants.GRAIN_ID_EXTENSION) ? context.Request.RouteValues[Constants.GRAIN_ID] : null;
+                    switch (grainIdType)
+                    {
+                        case GrainIdType.String:
+                            string stringId = (string)grainIdParameter;
+                            return Task.FromResult(this._clusterClient.GetGrain(grainType, stringId));
+                        case GrainIdType.Integer:
+                            long integerId = Convert.ToInt64(grainIdParameter);
+                            return Task.FromResult(this._clusterClient.GetGrain(grainType, integerId));
+                        case GrainIdType.IntegerCompound:
+                            return Task.FromResult(this._clusterClient.GetGrain(grainType, Convert.ToInt64(grainIdParameter), (string)grainIdExtensionParameter));
+                        case GrainIdType.GuidCompound:
+                            return Task.FromResult(this._clusterClient.GetGrain(grainType, Guid.Parse((string)grainIdParameter), (string)grainIdExtensionParameter));
+                        default:
+                            return Task.FromResult(this._clusterClient.GetGrain(grainType, Guid.Parse((string)grainIdParameter)));
+                    }
                 }
+
+                context.Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest;
+                return null;
             }
             catch (Exception exc)
             {
