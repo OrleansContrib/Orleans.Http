@@ -37,7 +37,14 @@ namespace Orleans.Http
 
             if (routeGrainProviderType != null)
             {
-                this.RouteGrainProvider = (IRouteGrainProvider)ActivatorUtilities.GetServiceOrCreateInstance(serviceProvider, routeGrainProviderType);
+                if(routeGrainProviderType.IsAssignableFrom(typeof(IRouteGrainProvider)))
+                {
+                    this.RouteGrainProvider = (IRouteGrainProvider)ActivatorUtilities.GetServiceOrCreateInstance(serviceProvider, routeGrainProviderType);
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Can not use type {routeGrainProviderType} as RouteGrainProvider, it must implement Orleans.Http.Abstractions.IRouteGrainProvider. Found on {methodInfo.DeclaringType}.{methodInfo.Name}");
+                }
             }
             else
             {
