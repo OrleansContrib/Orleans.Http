@@ -192,17 +192,18 @@ namespace Orleans.Http.Test
             _cluserClient = clusterClient;
         }
 
-        public Task<IGrain> GetGrain(Type grainType)
+        public ValueTask<IGrain> GetGrain(Type grainType)
         {
-            return Task.FromResult(_cluserClient.GetGrain(grainType, Guid.NewGuid()));
+            return new ValueTask<IGrain>(_cluserClient.GetGrain(grainType, Guid.NewGuid()));
         }
     }
 
     public class FailingRouteGrainProvider : IRouteGrainProvider
     {
-        public Task<IGrain> GetGrain(Type grainType)
+        public ValueTask<IGrain> GetGrain(Type grainType)
         {
-            return Task.FromResult<IGrain>(null);
+            IGrain nullResult = null;
+            return new ValueTask<IGrain>(nullResult);
         }
     }
 }

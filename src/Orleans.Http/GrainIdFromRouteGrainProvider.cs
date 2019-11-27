@@ -30,7 +30,7 @@ namespace Orleans.Http
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public Task<IGrain> GetGrain(Type grainType)
+        public ValueTask<IGrain> GetGrain(Type grainType)
         {
             var context = this._httpContextAccessor.HttpContext;
             var endpoint = (RouteEndpoint)context.GetEndpoint();
@@ -47,27 +47,29 @@ namespace Orleans.Http
                     {
                         case GrainIdType.String:
                             string stringId = (string)grainIdParameter;
-                            return Task.FromResult(this._clusterClient.GetGrain(grainType, stringId));
+                            return new ValueTask<IGrain>(this._clusterClient.GetGrain(grainType, stringId));
                         case GrainIdType.Integer:
                             long integerId = Convert.ToInt64(grainIdParameter);
-                            return Task.FromResult(this._clusterClient.GetGrain(grainType, integerId));
+                            return new ValueTask<IGrain>(this._clusterClient.GetGrain(grainType, integerId));
                         case GrainIdType.IntegerCompound:
-                            return Task.FromResult(this._clusterClient.GetGrain(grainType, Convert.ToInt64(grainIdParameter), (string)grainIdExtensionParameter));
+                            return new ValueTask<IGrain>(this._clusterClient.GetGrain(grainType, Convert.ToInt64(grainIdParameter), (string)grainIdExtensionParameter));
                         case GrainIdType.GuidCompound:
-                            return Task.FromResult(this._clusterClient.GetGrain(grainType, Guid.Parse((string)grainIdParameter), (string)grainIdExtensionParameter));
+                            return new ValueTask<IGrain>(this._clusterClient.GetGrain(grainType, Guid.Parse((string)grainIdParameter), (string)grainIdExtensionParameter));
                         default:
-                            return Task.FromResult(this._clusterClient.GetGrain(grainType, Guid.Parse((string)grainIdParameter)));
+                            return new ValueTask<IGrain>(this._clusterClient.GetGrain(grainType, Guid.Parse((string)grainIdParameter)));
                     }
                 }
 
                 context.Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest;
-                return Task.FromResult<IGrain>(null);
+                IGrain nullResult = null;
+                return new ValueTask<IGrain>(nullResult);
             }
             catch (Exception exc)
             {
                 context.Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest;
                 this._logger.LogError(exc, $"Failure getting grain '{grainType.FullName}' for route '{pattern.RawText}': {exc.Message}");
-                return Task.FromResult<IGrain>(null);
+                IGrain nullResult = null;
+                return new ValueTask<IGrain>(nullResult);
             }
         }
 

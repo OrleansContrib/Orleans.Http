@@ -14,9 +14,9 @@ namespace OrleansHttp.Grains
             _cluserClient = clusterClient;
         }
 
-        public Task<IGrain> GetGrain(Type grainType)
+        public ValueTask<IGrain> GetGrain(Type grainType)
         {
-            return Task.FromResult(_cluserClient.GetGrain(grainType, Guid.NewGuid()));
+            return new ValueTask<IGrain>(_cluserClient.GetGrain(grainType, Guid.NewGuid()));
         }
     }
 }

@@ -5,6 +5,6 @@ namespace Orleans.Http.Abstractions
 {
     public interface IRouteGrainProvider
     {
-        Task<IGrain> GetGrain(Type grainType);
+        ValueTask<IGrain> GetGrain(Type grainType);
     }
 }
