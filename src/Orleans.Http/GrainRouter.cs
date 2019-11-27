@@ -52,7 +52,15 @@ namespace Orleans.Http
                 invoker = allRoutes[context.Request.Method];
             }
 
-            IGrain grain = await invoker.RouteGrainProvider.GetGrain(invoker.GrainType);
+            IGrain grain = null;
+            try
+            {
+                grain = await invoker.RouteGrainProvider.GetGrain(invoker.GrainType);
+            }
+            catch(Exception ex)
+            {
+                this._logger.LogError(ex, "");
+            }
 
             if (grain == null)
             {

@@ -96,6 +96,10 @@ namespace Orleans.Http.Test
             url = "/grains/test/get7";
             response = await this._http.GetHttpMessage(TestExtensions.JSON, url);
             Assert.True(response.StatusCode == HttpStatusCode.InternalServerError);
+
+            url = "/grains/test/Orleans.Http.Test.ITestGrain/malformed-grain-id/get";
+            response = await this._http.GetHttpMessage(TestExtensions.JSON, url);
+            Assert.True(response.StatusCode == HttpStatusCode.BadRequest);
         }
 
         [Fact]

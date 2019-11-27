@@ -61,12 +61,13 @@ namespace Orleans.Http
                 }
 
                 context.Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest;
-                return null;
+                return Task.FromResult<IGrain>(null);
             }
             catch (Exception exc)
             {
+                context.Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest;
                 this._logger.LogError(exc, $"Failure getting grain '{grainType.FullName}' for route '{pattern.RawText}': {exc.Message}");
-                return null;
+                return Task.FromResult<IGrain>(null);
             }
         }
 
