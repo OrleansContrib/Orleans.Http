@@ -37,7 +37,7 @@ namespace Orleans.Http
 
             if (routeGrainProviderType != null)
             {
-                if(routeGrainProviderType.IsAssignableFrom(typeof(IRouteGrainProvider)))
+                if(typeof(IRouteGrainProvider).IsAssignableFrom(routeGrainProviderType))
                 {
                     this.RouteGrainProvider = (IRouteGrainProvider)ActivatorUtilities.GetServiceOrCreateInstance(serviceProvider, routeGrainProviderType);
                 }
