@@ -11,7 +11,11 @@ namespace Orleans.Http.Test
 {
     public class Startup
     {
+        //Test Options
+        public static bool UseRandomGuidDefaultGrainProvider { get; set; }
+
         public const string SECRET = "THIS IS OUR AWESOME SUPER SECRET!!!";
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -53,6 +57,10 @@ namespace Orleans.Http.Test
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrains("grains");
+                if(UseRandomGuidDefaultGrainProvider)
+                {
+                    endpoints.SetDefaultRouteGrainProvider<RandomGuidRouteGrainProvider>();
+                }
             });
         }
     }

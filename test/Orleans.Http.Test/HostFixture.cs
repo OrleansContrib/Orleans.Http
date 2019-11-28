@@ -18,7 +18,13 @@ namespace Orleans.Http.Test
     {
         public IHost Host { get; private set; }
         public HttpClient Http { get; private set; }
+
         public HostFixture()
+        {
+            this.Run();
+        }
+
+        public void Run()
         {
             var hostBuilder = new HostBuilder();
             hostBuilder.UseConsoleLifetime();
@@ -38,9 +44,12 @@ namespace Orleans.Http.Test
 
             this.Host = hostBuilder.Build();
             this.Host.Start();
-            this.Http = new HttpClient();
-            this.Http.BaseAddress = new Uri("http://localhost:9090");
+            this.Http = new HttpClient
+            {
+                BaseAddress = new Uri("http://localhost:9090")
+            };
         }
+
         public void Dispose()
         {
             this.Host.StopAsync().Wait();

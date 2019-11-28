@@ -31,7 +31,8 @@ namespace Orleans.Http
         {
             return services
                 .AddSingleton<MediaTypeManager>()
-                .AddSingleton<GrainRouter>();
+                .AddSingleton<GrainRouter>()
+                .AddSingleton<RouteGrainProviderFactory>();
         }
 
         public static IServiceCollection AddJsonMediaType(this IServiceCollection services, Action<JsonSerializerOptions> configure = null)
@@ -61,6 +62,20 @@ namespace Orleans.Http
         {
             return services
                 .AddSingleton<IMediaTypeHandler, FormsMediaTypeHandler>();
+        }
+
+        public static IEndpointRouteBuilder SetDefaultRouteGrainProvider<T>(this IEndpointRouteBuilder routes) where T : IRouteGrainProvider
+        {
+            return routes.SetDefaultRouteGrainProvider(typeof(T));
+        }
+
+        public static IEndpointRouteBuilder SetDefaultRouteGrainProvider(this IEndpointRouteBuilder routes, Type routeGrainProviderType)
+        {
+            var routeGrainProviderFactory = routes.ServiceProvider.GetRequiredService<RouteGrainProviderFactory>();
+
+            routeGrainProviderFactory.SetDefaultRouteGrainProvider(routeGrainProviderType);
+
+            return routes;
         }
 
         public static IEndpointRouteBuilder MapGrains(this IEndpointRouteBuilder routes, string prefix = "")

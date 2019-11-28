@@ -76,6 +76,9 @@ namespace Orleans.Http.Test
 
         [HttpGet(pattern: "Get7", routeGrainProvider: typeof(FailingRouteGrainProvider))]
         Task Get7();
+
+        [HttpGet(pattern: "Get8")]
+        Task Get8();
     }
 
     [ProtoContract]
@@ -181,6 +184,8 @@ namespace Orleans.Http.Test
         public Task Get6() => Task.CompletedTask;
 
         public Task Get7() => Task.CompletedTask;
+
+        public Task Get8() => Task.CompletedTask;
     }
 
     public class RandomGuidRouteGrainProvider : IRouteGrainProvider

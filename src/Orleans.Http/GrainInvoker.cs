@@ -24,32 +24,42 @@ namespace Orleans.Http
         private readonly MethodInfo _methodInfo;
         private readonly ILogger _logger;
         private readonly MediaTypeManager _mediaTypeManager;
+        private readonly RouteGrainProviderFactory _routeGrainProviderFactory;
         private MethodInfo _getResult;
         private bool _isIGrainHttpResultType;
         public Type GrainType => this._methodInfo.DeclaringType;
-        public IRouteGrainProvider RouteGrainProvider { get; }
+
+        private Type _routeGrainProviderType = null;
+        public IRouteGrainProvider RouteGrainProvider
+        {
+            get
+            {
+                if(this._routeGrainProviderType == null)
+                {
+                    return this._routeGrainProviderFactory.CreateDefault();
+                }
+                return this._routeGrainProviderFactory.Create(this._routeGrainProviderType);
+            }
+        }
 
         public GrainInvoker(IServiceProvider serviceProvider, MethodInfo methodInfo, Type routeGrainProviderType)
         {
             this._logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<GrainInvoker>();
             this._methodInfo = methodInfo;
             this._mediaTypeManager = serviceProvider.GetRequiredService<MediaTypeManager>();
+            this._routeGrainProviderFactory = serviceProvider.GetRequiredService<RouteGrainProviderFactory>();
+            this._routeGrainProviderType = routeGrainProviderType;
 
             if (routeGrainProviderType != null)
             {
                 if(typeof(IRouteGrainProvider).IsAssignableFrom(routeGrainProviderType))
                 {
-                    this.RouteGrainProvider = (IRouteGrainProvider)ActivatorUtilities.GetServiceOrCreateInstance(serviceProvider, routeGrainProviderType);
+                    this._routeGrainProviderType = routeGrainProviderType;
                 }
                 else
                 {
                     throw new InvalidOperationException($"Can not use type {routeGrainProviderType} as RouteGrainProvider, it must implement Orleans.Http.Abstractions.IRouteGrainProvider. Found on {methodInfo.DeclaringType}.{methodInfo.Name}");
                 }
-            }
-            else
-            {
-                //If it is null that means it is not set from the initial attribute - so we default to trying to get the grain id from the route itself
-                this.RouteGrainProvider = ActivatorUtilities.GetServiceOrCreateInstance<GrainIdFromRouteGrainProvider>(serviceProvider);
             }
 
             this.BuildResultDelegate();

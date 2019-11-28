@@ -13,7 +13,7 @@ namespace OrleansHttp.Grains
         Task<string> Hello([FromQuery]string name);
 
         // GET grains/Hello?name={name}
-        [HttpGet(pattern: "Hello", routeGrainProvider: typeof(RandomGuidRouteGrainProvider))]
+        [HttpGet(pattern: "Hello")]
         Task<string> SimpleHello([FromQuery]string name);
 
         // GET grains/{grainId}/token?admin=[true/false]

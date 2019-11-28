@@ -15,11 +15,13 @@ namespace Orleans.Http.Test
 {
     public class HttpTests : IClassFixture<HostFixture>
     {
-        private readonly IHost _host;
-        private readonly HttpClient _http;
+        private readonly HostFixture _fixture;
+        private IHost _host;
+        private HttpClient _http;
 
         public HttpTests(HostFixture fixture)
         {
+            this._fixture = fixture;
             this._host = fixture.Host;
             this._http = fixture.Http;
         }
@@ -140,6 +142,26 @@ namespace Orleans.Http.Test
             authResponse = JsonSerializer.Deserialize<AuthResponse>(await response.Content.ReadAsStringAsync());
             Assert.True(authResponse.Role == "admin");
             Assert.True(authResponse.User == "TestUser");
+        }
+
+        [Fact]
+        public async Task SetsDefaultRouteGrainProviderTest()
+        {
+            var url = "/grains/test/get8";
+            var response = await this._http.GetHttpMessage(TestExtensions.JSON, url);
+            Assert.True(response.StatusCode == HttpStatusCode.BadRequest);
+
+            Startup.UseRandomGuidDefaultGrainProvider = true;
+            this._fixture.Dispose();
+            this._fixture.Run();
+            this._host = this._fixture.Host;
+            this._http = this._fixture.Http;
+
+            url = "/grains/test/get8";
+            response = await this._http.GetHttpMessage(TestExtensions.JSON, url);
+            Assert.True(response.StatusCode == HttpStatusCode.OK);
+
+            Startup.UseRandomGuidDefaultGrainProvider = false;
         }
 
         private static string GetToken(bool admin = false)
