@@ -19,6 +19,8 @@ namespace Orleans.Http
             IntegerCompound = 4
         }
 
+        private static readonly ValueTask<IGrain> _nullGrainReference = default;
+
         private readonly IClusterClient _clusterClient;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -61,15 +63,13 @@ namespace Orleans.Http
                 }
 
                 context.Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest;
-                IGrain nullResult = null;
-                return new ValueTask<IGrain>(nullResult);
+                return _nullGrainReference;
             }
             catch (Exception exc)
             {
                 context.Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest;
                 this._logger.LogError(exc, $"Failure getting grain '{grainType.FullName}' for route '{pattern.RawText}': {exc.Message}");
-                IGrain nullResult = null;
-                return new ValueTask<IGrain>(nullResult);
+                return _nullGrainReference;
             }
         }
 
