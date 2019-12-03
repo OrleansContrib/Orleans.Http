@@ -32,7 +32,8 @@ namespace Orleans.Http
             return services
                 .AddSingleton<MediaTypeManager>()
                 .AddSingleton<GrainRouter>()
-                .AddSingleton<RouteGrainProviderFactory>();
+                .AddSingleton<RouteGrainProviderFactory>()
+                .AddSingleton<IRouteGrainProviderPolicyBuilder>(s => s.GetRequiredService<RouteGrainProviderFactory>());
         }
 
         public static IServiceCollection AddJsonMediaType(this IServiceCollection services, Action<JsonSerializerOptions> configure = null)
@@ -64,18 +65,13 @@ namespace Orleans.Http
                 .AddSingleton<IMediaTypeHandler, FormsMediaTypeHandler>();
         }
 
-        public static IEndpointRouteBuilder SetDefaultRouteGrainProvider<T>(this IEndpointRouteBuilder routes) where T : IRouteGrainProvider
+        public static IApplicationBuilder UseRouteGrainProviders(this IApplicationBuilder applicationBuilder, Action<IRouteGrainProviderPolicyBuilder> configureRouteGrainProviderPolicies)
         {
-            return routes.SetDefaultRouteGrainProvider(typeof(T));
-        }
+            var routeGrainProviderPolicyBuilder = applicationBuilder.ApplicationServices.GetRequiredService<IRouteGrainProviderPolicyBuilder>();
 
-        public static IEndpointRouteBuilder SetDefaultRouteGrainProvider(this IEndpointRouteBuilder routes, Type routeGrainProviderType)
-        {
-            var routeGrainProviderFactory = routes.ServiceProvider.GetRequiredService<RouteGrainProviderFactory>();
+            configureRouteGrainProviderPolicies?.Invoke(routeGrainProviderPolicyBuilder);
 
-            routeGrainProviderFactory.SetDefaultRouteGrainProvider(routeGrainProviderType);
-
-            return routes;
+            return applicationBuilder;
         }
 
         public static IEndpointRouteBuilder MapGrains(this IEndpointRouteBuilder routes, string prefix = "")
@@ -151,19 +147,19 @@ namespace Orleans.Http
                     Func<RoutePattern, RequestDelegate, IEndpointConventionBuilder> mapFunc = default;
                     var httpMethod = string.Empty;
                     RoutePattern routePattern = default;
-                    Type routeGrainProviderType = null;
+                    var routeGrainProviderPolicy = string.Empty;
 
                     if (attribute is RouteAttribute routeAttr)
                     {
                         routePattern = RoutePatternBuilder.BuildRoutePattern(prefix, topLevelPattern, grainType.FullName, method.Name, routeAttr.Pattern);
-                        routeGrainProviderType = routeAttr.RouteGrainProvider;
+                        routeGrainProviderPolicy = routeAttr.RouteGrainProviderPolicy;
                         httpMethod = "*";
                         mapFunc = routes.Map;
                     }
                     else if (attribute is MethodAttribute methodAttr)
                     {
                         routePattern = RoutePatternBuilder.BuildRoutePattern(prefix, topLevelPattern, grainType.FullName, method.Name, methodAttr.Pattern);
-                        routeGrainProviderType = methodAttr.RouteGrainProvider;
+                        routeGrainProviderPolicy = methodAttr.RouteGrainProviderPolicy;
 
                         Func<string, RequestDelegate, IEndpointConventionBuilder> methodMapFunc = default;
 
@@ -196,7 +192,7 @@ namespace Orleans.Http
                         continue;
                     }
 
-                    if (!dispatcher.RegisterRoute(routePattern.RawText, httpMethod, method, routeGrainProviderType))
+                    if (!dispatcher.RegisterRoute(routePattern.RawText, httpMethod, method, routeGrainProviderPolicy))
                     {
                         throw new InvalidOperationException($"Dupplicated route pattern '{routePattern.RawText}'. A route with this pattern already exist.");
                     }

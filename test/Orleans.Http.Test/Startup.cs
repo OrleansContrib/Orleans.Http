@@ -57,9 +57,15 @@ namespace Orleans.Http.Test
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrains("grains");
-                if(UseRandomGuidDefaultGrainProvider)
+            });
+            app.UseRouteGrainProviders(rgppb =>
+            {
+                rgppb.RegisterRouteGrainProvider<RandomGuidRouteGrainProvider>(nameof(RandomGuidRouteGrainProvider));
+                rgppb.RegisterRouteGrainProvider<FailingRouteGrainProvider>(nameof(FailingRouteGrainProvider));
+
+                if (UseRandomGuidDefaultGrainProvider)
                 {
-                    endpoints.SetDefaultRouteGrainProvider<RandomGuidRouteGrainProvider>();
+                    rgppb.SetDefaultRouteGrainProviderPolicy(nameof(RandomGuidRouteGrainProvider));
                 }
             });
         }

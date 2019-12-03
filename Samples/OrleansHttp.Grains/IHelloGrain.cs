@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Orleans;
 using Orleans.Http.Abstractions;
@@ -13,7 +13,7 @@ namespace OrleansHttp.Grains
         Task<string> Hello([FromQuery]string name);
 
         // GET grains/Hello?name={name}
-        [HttpGet(pattern: "Hello")]
+        [HttpGet(pattern: "Hello", routeGrainProviderPolicy: nameof(RandomGuidRouteGrainProvider))]
         Task<string> SimpleHello([FromQuery]string name);
 
         // GET grains/{grainId}/token?admin=[true/false]

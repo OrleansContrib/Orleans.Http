@@ -71,10 +71,10 @@ namespace Orleans.Http.Test
         [HttpPost("{grainId}/SameUrlAndMethod")]
         Task SameUrlAndMethod();
 
-        [HttpGet(pattern: "Get6", routeGrainProvider: typeof(RandomGuidRouteGrainProvider))]
+        [HttpGet(pattern: "Get6", routeGrainProviderPolicy: nameof(RandomGuidRouteGrainProvider))]
         Task Get6();
 
-        [HttpGet(pattern: "Get7", routeGrainProvider: typeof(FailingRouteGrainProvider))]
+        [HttpGet(pattern: "Get7", routeGrainProviderPolicy: nameof(FailingRouteGrainProvider))]
         Task Get7();
 
         [HttpGet(pattern: "Get8")]

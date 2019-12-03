@@ -29,38 +29,26 @@ namespace Orleans.Http
         private bool _isIGrainHttpResultType;
         public Type GrainType => this._methodInfo.DeclaringType;
 
-        private Type _routeGrainProviderType = null;
+        private string _routeGrainProviderPolicy;
         public IRouteGrainProvider RouteGrainProvider
         {
             get
             {
-                if(this._routeGrainProviderType == null)
+                if(string.IsNullOrEmpty(this._routeGrainProviderPolicy))
                 {
                     return this._routeGrainProviderFactory.CreateDefault();
                 }
-                return this._routeGrainProviderFactory.Create(this._routeGrainProviderType);
+                return this._routeGrainProviderFactory.Create(this._routeGrainProviderPolicy);
             }
         }
 
-        public GrainInvoker(IServiceProvider serviceProvider, MethodInfo methodInfo, Type routeGrainProviderType)
+        public GrainInvoker(IServiceProvider serviceProvider, MethodInfo methodInfo, string routeGrainProviderPolicy)
         {
             this._logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<GrainInvoker>();
             this._methodInfo = methodInfo;
             this._mediaTypeManager = serviceProvider.GetRequiredService<MediaTypeManager>();
             this._routeGrainProviderFactory = serviceProvider.GetRequiredService<RouteGrainProviderFactory>();
-            this._routeGrainProviderType = routeGrainProviderType;
-
-            if (routeGrainProviderType != null)
-            {
-                if(typeof(IRouteGrainProvider).IsAssignableFrom(routeGrainProviderType))
-                {
-                    this._routeGrainProviderType = routeGrainProviderType;
-                }
-                else
-                {
-                    throw new InvalidOperationException($"Can not use type {routeGrainProviderType} as RouteGrainProvider, it must implement Orleans.Http.Abstractions.IRouteGrainProvider. Found on {methodInfo.DeclaringType}.{methodInfo.Name}");
-                }
-            }
+            this._routeGrainProviderPolicy = routeGrainProviderPolicy;
 
             this.BuildResultDelegate();
             this.BuildParameterMap();

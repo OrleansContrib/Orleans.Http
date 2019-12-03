@@ -20,19 +20,19 @@ namespace Orleans.Http
             this._logger = loggerFactory.CreateLogger<GrainRouter>();
         }
 
-        public bool RegisterRoute(string pattern, string httpMethod, MethodInfo method, Type routeGrainProviderType)
+        public bool RegisterRoute(string pattern, string httpMethod, MethodInfo method, string routeGrainProviderPolicy)
         {
             if (this._routes.TryGetValue(pattern, out var grainRoutes))
             {
                 if (grainRoutes.ContainsKey(httpMethod)) return false;
 
-                grainRoutes[httpMethod] = new GrainInvoker(this._serviceProvider, method, routeGrainProviderType);
+                grainRoutes[httpMethod] = new GrainInvoker(this._serviceProvider, method, routeGrainProviderPolicy);
             }
             else
             {
                 this._routes[pattern] = new Dictionary<string, GrainInvoker>(StringComparer.InvariantCultureIgnoreCase)
                 {
-                    [httpMethod] = new GrainInvoker(this._serviceProvider, method, routeGrainProviderType)
+                    [httpMethod] = new GrainInvoker(this._serviceProvider, method, routeGrainProviderPolicy)
                 };
             }
 
@@ -53,9 +53,10 @@ namespace Orleans.Http
             }
 
             IGrain grain = null;
+            var routeGrainProvider = invoker.RouteGrainProvider;
             try
             {
-                grain = await invoker.RouteGrainProvider.GetGrain(invoker.GrainType);
+                grain = await routeGrainProvider.GetGrain(invoker.GrainType);
             }
             catch(Exception ex)
             {
@@ -67,7 +68,7 @@ namespace Orleans.Http
                 //Check if status is set to OK and change to internal server error, the invoker's RouteGrainProvider implementation may handle this otherwise
                 if (context.Response.StatusCode == (int)System.Net.HttpStatusCode.OK)
                 {
-                    this._logger.LogError($"Failure getting grain '{invoker.GrainType.FullName}' for route '{pattern.RawText}' with RouteGrainProvider '{invoker.RouteGrainProvider.GetType()}' and was unhandled");
+                    this._logger.LogError($"Failure getting grain '{invoker.GrainType.FullName}' for route '{pattern.RawText}' with RouteGrainProvider '{routeGrainProvider.GetType()}' and was unhandled");
                     context.Response.StatusCode = (int)System.Net.HttpStatusCode.InternalServerError;
                 }
                 return;
