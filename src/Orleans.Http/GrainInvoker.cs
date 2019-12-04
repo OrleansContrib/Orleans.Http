@@ -24,17 +24,31 @@ namespace Orleans.Http
         private readonly MethodInfo _methodInfo;
         private readonly ILogger _logger;
         private readonly MediaTypeManager _mediaTypeManager;
+        private readonly RouteGrainProviderFactory _routeGrainProviderFactory;
         private MethodInfo _getResult;
         private bool _isIGrainHttpResultType;
         public Type GrainType => this._methodInfo.DeclaringType;
-        public GrainIdType GrainIdType { get; private set; }
 
-        public GrainInvoker(IServiceProvider serviceProvider, GrainIdType grainIdType, MethodInfo methodInfo)
+        private string _routeGrainProviderPolicy;
+        public IRouteGrainProvider RouteGrainProvider
         {
-            this.GrainIdType = grainIdType;
+            get
+            {
+                if(string.IsNullOrEmpty(this._routeGrainProviderPolicy))
+                {
+                    return this._routeGrainProviderFactory.CreateDefault();
+                }
+                return this._routeGrainProviderFactory.Create(this._routeGrainProviderPolicy);
+            }
+        }
+
+        public GrainInvoker(IServiceProvider serviceProvider, MethodInfo methodInfo, string routeGrainProviderPolicy)
+        {
             this._logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<GrainInvoker>();
             this._methodInfo = methodInfo;
             this._mediaTypeManager = serviceProvider.GetRequiredService<MediaTypeManager>();
+            this._routeGrainProviderFactory = serviceProvider.GetRequiredService<RouteGrainProviderFactory>();
+            this._routeGrainProviderPolicy = routeGrainProviderPolicy;
 
             this.BuildResultDelegate();
             this.BuildParameterMap();

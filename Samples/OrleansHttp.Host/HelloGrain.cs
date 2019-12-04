@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -25,6 +24,11 @@ namespace OrleansHttp.Host
         public Task<string> Hello(string name)
         {
             return Task.FromResult($"Hello, {name}!");
+        }
+
+        public Task<string> SimpleHello(string name)
+        {
+            return this.Hello(name);
         }
 
         public Task<string> GetToken(bool admin)

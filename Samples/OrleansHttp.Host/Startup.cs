@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Orleans.Http;
+using OrleansHttp.Grains;
 
 namespace OrleansHttp.Host
 {
@@ -54,6 +55,10 @@ namespace OrleansHttp.Host
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrains("grains");
+            });
+            app.UseRouteGrainProviders(rgppb =>
+            {
+                rgppb.RegisterRouteGrainProvider<RandomGuidRouteGrainProvider>(nameof(RandomGuidRouteGrainProvider));
             });
         }
     }

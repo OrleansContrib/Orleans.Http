@@ -85,7 +85,7 @@ The `Pattern` property of the attributes define the route to be used. If the `Pa
 
 `{optionalPrefix}/{optionalTopLevelPattern}/{grainTypeName}/{grainId}/{methodName}`
 
-If an attribute `Pattern` property is set, it is required to somewhere into the pattern to add the `{grainId}` string otherwise the route will fail to be registered. Optionally, you can also add `{grainIdExtension}` in case of grains that have Compound keys.
+By default, if an attribute `Pattern` property is set, it is required to somewhere into the pattern to add the `{grainId}` string otherwise the route will fail to be registered. Optionally, you can also add `{grainIdExtension}` in case of grains that have Compound keys. 
 
 The following attributes are under the `Orleans.Http.Abstractions` package:
 
@@ -103,7 +103,11 @@ When added to a *Grain Method*, this attribute tells the runtime to route ALL HT
 
 This attribute can be applied only to methods.
 
-The value of `Patttern` property is used to generate the route of that method for a particular HTTP Verb. If the patttern starts with `/`, it will ignore all the prefixes and will be used as the de-facto route for that method.
+The value of `Patttern` property is used to generate the route of that method for a particular HTTP Verb. If the patttern starts with `/`, it will ignore all the prefixes and will be used as the de-facto route for that method. 
+
+### `routeGrainProviderPolicy optional argument`
+
+This argument allows you to set the route grain provider used for the speicified endpoint. This allows you to override the default behaviour and provide an `IGrain` that the request will go to. To register a route grain provider policy, use the extension method `UseRouteGrainProviders(Action<IRouteGrainProviderPolcyBuilder>)` on `IApplicationBuilder` In your `Startup` class. The default RouteGrainProvider policy may also be set there. Registering the policy takes in a generic type argument, this type must implement `IRouteGrainProvider`, optionally, if your implementing type is registered with dependency injection, it will use that type's lifetime, otherwise it will have a scoped lifetime by default. 
 
 # Example usage
 
@@ -189,6 +193,15 @@ public class Startup
 
             // You can add any other endpoints here like regular ASP.NET Controller, SignalR, you name it. 
             // Orleans endpoints are agnostic to other routes.
+        });
+
+        //Optionally register route grain provider policies
+        app.UseRouteGrainProviders(routeGrainProviders =>
+        {
+            routeGrainProviders.RegisterRouteGrainProvider<YourCustomRouteGrainProvider>("SomePolicy");
+
+            //You may also optionally set the defaulty policy, so it it used by every endpoint without a specified policy
+            routeGrainProviders.SetDefaultRouteGrainProviderPolicy("SomePolicy");
         });
     }
 }

@@ -70,6 +70,15 @@ namespace Orleans.Http.Test
         [HttpGet("{grainId}/SameUrlAndMethod")]
         [HttpPost("{grainId}/SameUrlAndMethod")]
         Task SameUrlAndMethod();
+
+        [HttpGet(pattern: "Get6", routeGrainProviderPolicy: nameof(RandomGuidRouteGrainProvider))]
+        Task Get6();
+
+        [HttpGet(pattern: "Get7", routeGrainProviderPolicy: nameof(FailingRouteGrainProvider))]
+        Task Get7();
+
+        [HttpGet(pattern: "Get8")]
+        Task Get8();
     }
 
     [ProtoContract]
@@ -171,5 +180,35 @@ namespace Orleans.Http.Test
         public Task SameUrlPost() => Task.CompletedTask;
 
         public Task SameUrlAndMethod() => Task.CompletedTask;
+
+        public Task Get6() => Task.CompletedTask;
+
+        public Task Get7() => Task.CompletedTask;
+
+        public Task Get8() => Task.CompletedTask;
+    }
+
+    public class RandomGuidRouteGrainProvider : IRouteGrainProvider
+    {
+        private readonly IClusterClient _cluserClient;
+
+        public RandomGuidRouteGrainProvider(IClusterClient clusterClient)
+        {
+            _cluserClient = clusterClient;
+        }
+
+        public ValueTask<IGrain> GetGrain(Type grainType)
+        {
+            return new ValueTask<IGrain>(_cluserClient.GetGrain(grainType, Guid.NewGuid()));
+        }
+    }
+
+    public class FailingRouteGrainProvider : IRouteGrainProvider
+    {
+        public ValueTask<IGrain> GetGrain(Type grainType)
+        {
+            IGrain nullResult = null;
+            return new ValueTask<IGrain>(nullResult);
+        }
     }
 }
