@@ -41,7 +41,8 @@ namespace Orleans.Http.Test
             services
                 .AddGrainRouter()
                 .AddJsonMediaType()
-                .AddProtobufMediaType();
+                .AddProtobufMediaType()
+                .AddFormsMediaType();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
