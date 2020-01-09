@@ -79,6 +79,9 @@ namespace Orleans.Http.Test
 
         [HttpGet(pattern: "Get8")]
         Task Get8();
+
+        [HttpPost("{grainId}/FormTest")]
+        Task FormTest([FromBody]Dictionary<string, string> payload);
     }
 
     [ProtoContract]
@@ -186,6 +189,13 @@ namespace Orleans.Http.Test
         public Task Get7() => Task.CompletedTask;
 
         public Task Get8() => Task.CompletedTask;
+
+        public Task FormTest(Dictionary<string, string> payload)
+        {
+            if (payload != null && payload.Count == 1) return Task.CompletedTask;
+
+            throw new ArgumentException(nameof(payload));
+        }
     }
 
     public class RandomGuidRouteGrainProvider : IRouteGrainProvider

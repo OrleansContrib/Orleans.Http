@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
@@ -102,6 +103,20 @@ namespace Orleans.Http.Test
             url = "/grains/test/Orleans.Http.Test.ITestGrain/malformed-grain-id/get";
             response = await this._http.GetHttpMessage(TestExtensions.JSON, url);
             Assert.True(response.StatusCode == HttpStatusCode.BadRequest);
+        }
+
+        [Fact]
+        public async Task FormsTest()
+        {
+            var payload = new TestPayload();
+            payload.Number = 12340000;
+            payload.Text = "Test text";
+
+            var url = "/grains/test/00000000-0000-0000-0000-000000000000/FormTest";
+            var dic = new Dictionary<string, string>();
+            dic["Test"] = "testing dic";
+            var response = await this._http.PostAsync(url, new FormUrlEncodedContent(dic));
+            Assert.True(response.StatusCode == HttpStatusCode.OK);
         }
 
         [Fact]
