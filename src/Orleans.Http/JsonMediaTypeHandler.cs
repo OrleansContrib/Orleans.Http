@@ -9,9 +9,8 @@ namespace Orleans.Http
 {
     internal sealed class JsonMediaTypeHandler : IMediaTypeHandler
     {
-        private const string MEDIA_TYPE = "application/json";
         private readonly JsonSerializerOptions _options;
-        public string MediaType => MEDIA_TYPE;
+        public string[] MediaTypes => new[] { "application/json; charset=utf-8", "application/json;charset=utf-8", "application/json" };
 
         public JsonMediaTypeHandler(JsonSerializerOptions options)
         {

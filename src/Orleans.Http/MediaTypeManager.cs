@@ -19,11 +19,23 @@ namespace Orleans.Http
         public MediaTypeManager(IServiceProvider serviceProvider)
         {
             this._logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<MediaTypeManager>();
-            this._handlers = serviceProvider.GetServices<IMediaTypeHandler>()?.ToDictionary(h => h.MediaType, h => h, StringComparer.InvariantCultureIgnoreCase);
-            if (this._handlers == null || this._handlers.Count == 0)
+            this._handlers = new Dictionary<string, IMediaTypeHandler>(StringComparer.InvariantCultureIgnoreCase);
+
+            var handlersRegistered = serviceProvider.GetServices<IMediaTypeHandler>();
+            if (handlersRegistered != null)
+            {
+                foreach (var handler in handlersRegistered)
+                {
+                    foreach (var mediaType in handler.MediaTypes)
+                    {
+                        this._handlers[mediaType] = handler;
+                    }
+                }
+            }
+
+            if (this._handlers.Count == 0)
             {
                 this._logger.LogWarning("There are no IMediaTypeHandlers registered! Request body will be ignored.");
-                this._handlers = new Dictionary<string, IMediaTypeHandler>();
             }
         }
 
@@ -40,7 +52,7 @@ namespace Orleans.Http
             }
             catch (Exception exc)
             {
-                this._logger.LogWarning(exc, $"Failure to serialize body into '{handler.MediaType}' using {handler.GetType().FullName}: {exc.Message}.");
+                this._logger.LogWarning(exc, $"Failure to serialize body into '{mediaType}' using {handler.GetType().FullName}: {exc.Message}.");
             }
 
             return false;

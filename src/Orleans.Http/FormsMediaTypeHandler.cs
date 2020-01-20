@@ -12,7 +12,7 @@ namespace Orleans.Http
     internal sealed class FormsMediaTypeHandler : IMediaTypeHandler
     {
         private static readonly Type _dicType = typeof(Dictionary<string, string>);
-        public string MediaType => "application/x-www-form-urlencoded";
+        public string[] MediaTypes => new[] { "application/x-www-form-urlencoded" };
 
         public async ValueTask<object> Deserialize(PipeReader reader, Type type, CancellationToken cancellationToken)
         {
