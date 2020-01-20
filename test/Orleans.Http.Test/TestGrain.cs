@@ -6,6 +6,7 @@ using Orleans.Concurrency;
 using Orleans.Http.Abstractions;
 using ProtoBuf;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Orleans.Http.Test
 {
@@ -82,14 +83,19 @@ namespace Orleans.Http.Test
 
         [HttpPost("{grainId}/FormTest")]
         Task FormTest([FromBody]Dictionary<string, string> payload);
+
+        [HttpPost("{grainId}/JsonTest")]
+        Task<TestPayload> JsonTest([FromBody]TestPayload payload);
     }
 
     [ProtoContract]
     public class TestPayload
     {
         [ProtoMember(1)]
+        [JsonPropertyName("number")]
         public int Number { get; set; }
         [ProtoMember(2)]
+        [JsonPropertyName("text")]
         public string Text { get; set; }
     }
 
@@ -193,6 +199,16 @@ namespace Orleans.Http.Test
         public Task FormTest(Dictionary<string, string> payload)
         {
             if (payload != null && payload.Count == 1) return Task.CompletedTask;
+
+            throw new ArgumentException(nameof(payload));
+        }
+
+        public Task<TestPayload> JsonTest(TestPayload payload)
+        {
+            if (payload != null && payload.Number == 12340000 && payload.Text == "Test text")
+            {
+                return Task.FromResult(payload);
+            }
 
             throw new ArgumentException(nameof(payload));
         }

@@ -9,7 +9,7 @@ namespace Orleans.Http.MediaTypes.Protobuf
 {
     internal sealed class ProtobufMediaTypeHandler : IMediaTypeHandler
     {
-        public string MediaType => "application/protobuf";
+        public string[] MediaTypes => new[] { "application/protobuf" };
 
         public ValueTask<object> Deserialize(PipeReader reader, Type type, CancellationToken cancellationToken)
         {

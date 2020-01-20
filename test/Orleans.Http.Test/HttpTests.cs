@@ -106,12 +106,24 @@ namespace Orleans.Http.Test
         }
 
         [Fact]
-        public async Task FormsTest()
+        public async Task JsonTest()
         {
             var payload = new TestPayload();
             payload.Number = 12340000;
             payload.Text = "Test text";
 
+            var url = "/grains/test/00000000-0000-0000-0000-000000000000/JsonTest";
+            var response = await this._http.PostAsync(url, new StringContent(JsonSerializer.Serialize(payload, typeof(TestPayload)), Encoding.UTF8, TestExtensions.JSON));
+            Assert.True(response.IsSuccessStatusCode);
+            var stream = await response.Content.ReadAsStreamAsync();
+            var resp = await JsonSerializer.DeserializeAsync<TestPayload>(stream);
+            Assert.True(payload.Number == resp.Number);
+            Assert.True(payload.Text == resp.Text);
+        }
+
+        [Fact]
+        public async Task FormsTest()
+        {
             var url = "/grains/test/00000000-0000-0000-0000-000000000000/FormTest";
             var dic = new Dictionary<string, string>();
             dic["Test"] = "testing dic";

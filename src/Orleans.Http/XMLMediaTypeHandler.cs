@@ -11,7 +11,7 @@ namespace Orleans.Http
     internal sealed class XMLMediaTypeHandler : IMediaTypeHandler
     {
         private readonly ConcurrentDictionary<string, XmlSerializer> _serializers = new ConcurrentDictionary<string, XmlSerializer>();
-        public string MediaType => "application/xml";
+        public string[] MediaTypes => new[] { "application/xml" };
 
         public ValueTask<object> Deserialize(PipeReader reader, Type type, CancellationToken cancellationToken)
         {
