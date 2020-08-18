@@ -13,4 +13,8 @@
     <Description>Microsoft Orleans Http Swagger</Description>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Orleans.Http\Orleans.Http.csproj" />
+  </ItemGroup>
+
 </Project>
