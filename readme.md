@@ -172,10 +172,21 @@ public class Startup
             .AddGrainRouter()
             .AddJsonMediaType()
             .AddProtobufMediaType();
+        services.AddMvcCore().AddApiExplorer();
+        services.AddSwashbuckleOrleans();
+        services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "My Api", Version="v1"});              
+        });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+           c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        });
         // Enable ASP.NET Core Endpoint Routing
         app.UseRouting();
 
