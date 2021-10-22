@@ -16,7 +16,7 @@
 
 This package leverages ASP.NET Core Endpoint Routing to expose grains as HTTP endpoints without need of have to implement Controllers. The request is received and processed by grains methods itself. The idea is to perform in a similar way to Controllers without having to add any boilerplate code to your Orleans project.
 
-At the silo startup, the package look for usage of `[Route]` and `[HttpXXX]` attributes onn grain interface methods and register a route on ASP.NET Core endpoints route table. When a request arrive to that route, the parameters are extracted from the request, mapped to grain method parameters, and the grain is invoked. If the grain return `Task<T>`, the returning object is serialized back to the caller using one of the registered `IMediaTypeHandler` and added to the Response body. 
+At the silo startup, the package look for usage of `[Route]` and `[HttpXXX]` attributes on grain interface methods and register a route on ASP.NET Core endpoints route table. When a request arrive to that route, the parameters are extracted from the request, mapped to grain method parameters, and the grain is invoked. If the grain return `Task<T>`, the returning object is serialized back to the caller using one of the registered `IMediaTypeHandler` and added to the Response body. 
 
 # Installation
 
@@ -73,9 +73,9 @@ public interface IMediaTypeHandler
 }
 ```
 
-## Authentication / Authorizattion
+## Authentication / Authorization
 
-In a similar way to ASP.NET Core Controllers, this package also allow the developer to leverage ASP.NET Core Authentication/Authorization middleware. Just add `[Authorize]` attribute to the grain method interface and it will just work the same way. Make sure to configure your ASP.NET Core Authentication/Authorizattion middleware.
+In a similar way to ASP.NET Core Controllers, this package also allow the developer to leverage ASP.NET Core Authentication/Authorization middleware. Just add `[Authorize]` attribute to the grain method interface and it will just work the same way. Make sure to configure your ASP.NET Core Authentication/Authorization middleware.
 
 # Routes and Attributes
 
