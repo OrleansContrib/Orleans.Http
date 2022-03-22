@@ -1,25 +1,27 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3A0FB45D-BE33-4F5A-B501-075944076814}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orleans.Http", "src\Orleans.Http\Orleans.Http.csproj", "{7F8C1ABC-9C15-4845-9B0A-D2D1096402E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orleans.Http", "src\Orleans.Http\Orleans.Http.csproj", "{7F8C1ABC-9C15-4845-9B0A-D2D1096402E7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{5BA342D9-1B0F-411F-8A55-4AA6CCED9E66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orleans.Http.Test", "test\Orleans.Http.Test\Orleans.Http.Test.csproj", "{6C923775-306D-4B3C-AD6D-1D679F405394}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orleans.Http.Test", "test\Orleans.Http.Test\Orleans.Http.Test.csproj", "{6C923775-306D-4B3C-AD6D-1D679F405394}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orleans.Http.MediaTypes.Protobuf", "src\Orleans.Http.MediaTypes.Protobuf\Orleans.Http.MediaTypes.Protobuf.csproj", "{8452309D-E2D1-47BF-9094-3C71EA20C5C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orleans.Http.MediaTypes.Protobuf", "src\Orleans.Http.MediaTypes.Protobuf\Orleans.Http.MediaTypes.Protobuf.csproj", "{8452309D-E2D1-47BF-9094-3C71EA20C5C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orleans.Http.Abstractions", "src\Orleans.Http.Abstractions\Orleans.Http.Abstractions.csproj", "{9D1C96E7-087A-4576-9C3C-1AE6CC505658}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orleans.Http.Abstractions", "src\Orleans.Http.Abstractions\Orleans.Http.Abstractions.csproj", "{9D1C96E7-087A-4576-9C3C-1AE6CC505658}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{33BCF746-0AE0-41DD-9E63-49E029F13036}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrleansHttp.Grains", "Samples\OrleansHttp.Grains\OrleansHttp.Grains.csproj", "{920AB9DA-A141-4416-B427-74B66CF04521}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrleansHttp.Grains", "Samples\OrleansHttp.Grains\OrleansHttp.Grains.csproj", "{920AB9DA-A141-4416-B427-74B66CF04521}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrleansHttp.Host", "Samples\OrleansHttp.Host\OrleansHttp.Host.csproj", "{4BD60946-9469-49DF-B3F2-885BEF5CE5A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrleansHttp.Host", "Samples\OrleansHttp.Host\OrleansHttp.Host.csproj", "{4BD60946-9469-49DF-B3F2-885BEF5CE5A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orleans.Http.Swagger", "src\Orleans.Http.Swagger\Orleans.Http.Swagger.csproj", "{4232C164-1FDF-4D9A-9388-3B8DB7F35B7E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,9 +31,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{7F8C1ABC-9C15-4845-9B0A-D2D1096402E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -106,6 +105,21 @@ Global
 		{4BD60946-9469-49DF-B3F2-885BEF5CE5A6}.Release|x64.Build.0 = Release|Any CPU
 		{4BD60946-9469-49DF-B3F2-885BEF5CE5A6}.Release|x86.ActiveCfg = Release|Any CPU
 		{4BD60946-9469-49DF-B3F2-885BEF5CE5A6}.Release|x86.Build.0 = Release|Any CPU
+		{4232C164-1FDF-4D9A-9388-3B8DB7F35B7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4232C164-1FDF-4D9A-9388-3B8DB7F35B7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4232C164-1FDF-4D9A-9388-3B8DB7F35B7E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4232C164-1FDF-4D9A-9388-3B8DB7F35B7E}.Debug|x64.Build.0 = Debug|Any CPU
+		{4232C164-1FDF-4D9A-9388-3B8DB7F35B7E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4232C164-1FDF-4D9A-9388-3B8DB7F35B7E}.Debug|x86.Build.0 = Debug|Any CPU
+		{4232C164-1FDF-4D9A-9388-3B8DB7F35B7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4232C164-1FDF-4D9A-9388-3B8DB7F35B7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4232C164-1FDF-4D9A-9388-3B8DB7F35B7E}.Release|x64.ActiveCfg = Release|Any CPU
+		{4232C164-1FDF-4D9A-9388-3B8DB7F35B7E}.Release|x64.Build.0 = Release|Any CPU
+		{4232C164-1FDF-4D9A-9388-3B8DB7F35B7E}.Release|x86.ActiveCfg = Release|Any CPU
+		{4232C164-1FDF-4D9A-9388-3B8DB7F35B7E}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7F8C1ABC-9C15-4845-9B0A-D2D1096402E7} = {3A0FB45D-BE33-4F5A-B501-075944076814}
@@ -114,5 +128,9 @@ Global
 		{9D1C96E7-087A-4576-9C3C-1AE6CC505658} = {3A0FB45D-BE33-4F5A-B501-075944076814}
 		{920AB9DA-A141-4416-B427-74B66CF04521} = {33BCF746-0AE0-41DD-9E63-49E029F13036}
 		{4BD60946-9469-49DF-B3F2-885BEF5CE5A6} = {33BCF746-0AE0-41DD-9E63-49E029F13036}
+		{4232C164-1FDF-4D9A-9388-3B8DB7F35B7E} = {3A0FB45D-BE33-4F5A-B501-075944076814}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {382BA4C8-D720-4D44-8316-C8E9588C0402}
 	EndGlobalSection
 EndGlobal
